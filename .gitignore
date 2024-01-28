@@ -1,0 +1,23 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/AgentAchieve/.vs/AgentAchieve
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.nupkg
+*.[Cc]ache
+*.[Rr]es[Ss]harper*
+*.[Tt]est[Rr]esult*
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*_i.h
+*.dmp
+*.mdmp
