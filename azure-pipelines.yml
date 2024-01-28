@@ -1,0 +1,63 @@
+# https://aka.ms/yaml
+
+trigger:
+- Dev
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  buildConfiguration: 'Release'
+  solutionPath: '**/*.sln'
+  projectPath: 'AgentAchieve/AgentAchieve.Web/AgentAchieve.Web.csproj' 
+  
+steps:
+- task: NuGetAuthenticate@1
+  inputs:
+    nuGetServiceConnections: 'telerik'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
+  inputs:
+    command: 'restore'
+    projects: '$(solutionPath)'
+    feedsToUse: 'config'
+    nugetConfigPath: 'AgentAchieve/NuGet.config'
+    externalFeedCredentials: 'telerik'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build'
+  inputs:
+    command: 'build'
+    projects: '$(solutionPath)'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Unit Tests'
+  inputs:
+    command: 'test'
+    projects: '**/*Test*.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
+    zipAfterPublish: true
+
+- task: DownloadSecureFile@1
+  name: publishProfile
+  inputs:
+    secureFile: 'AgentAchieveDevZip.PublishSettings' 
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'PublishProfile'
+    PublishProfilePath: '$(publishProfile.secureFilePath)'
+    PublishProfilePassword: '$(azurepublishpassword)'
+    Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    appType: 'webApp'
+    DeploymentType: zipDeploy
+  
