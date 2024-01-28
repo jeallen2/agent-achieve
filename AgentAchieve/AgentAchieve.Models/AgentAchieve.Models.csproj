@@ -7,13 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AgentAchieve.Models\AgentAchieve.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-    <Folder Include="IRepositories\" />
-    <Folder Include="Repositories\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Enums\" />
+    <Folder Include="DTOs\" />
   </ItemGroup>
 
 </Project>

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentAchieve.DAL.Test", "Ag
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6F3EFB2B-A2BB-4916-843B-BD818AB891CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentAchieve.Models", "AgentAchieve.Models\AgentAchieve.Models.csproj", "{8AAE7096-7FAE-4A38-908B-380A3D01289A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{D0063551-5F4E-4648-B86D-159B08DE520A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0063551-5F4E-4648-B86D-159B08DE520A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0063551-5F4E-4648-B86D-159B08DE520A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AAE7096-7FAE-4A38-908B-380A3D01289A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AAE7096-7FAE-4A38-908B-380A3D01289A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AAE7096-7FAE-4A38-908B-380A3D01289A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AAE7096-7FAE-4A38-908B-380A3D01289A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
