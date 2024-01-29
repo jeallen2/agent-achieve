@@ -21,6 +21,9 @@ steps:
   inputs:
     command: 'restore'
     projects: '$(solutionPath)'
+    feedsToUse: 'config'
+    nugetConfigPath: 'NuGet.config'
+    externalFeedCredentials: 'telerik'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build'
@@ -28,6 +31,13 @@ steps:
     command: 'build'
     projects: '$(solutionPath)'
     arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Unit Tests'
+  inputs:
+    command: 'test'
+    projects: '**/*Test*.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
