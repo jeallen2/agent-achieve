@@ -50,7 +50,7 @@ steps:
 - task: DownloadSecureFile@1
   name: publishProfile
   inputs:
-    secureFile: 'AgentAchieveDev.PublishSettings' 
+    secureFile: 'AgentAchieveDevZip.PublishSettings' 
 
 - task: AzureRmWebAppDeployment@4
   inputs:
@@ -58,3 +58,4 @@ steps:
     PublishProfilePath: '$(publishProfile.secureFilePath)'
     PublishProfilePassword: '$(azurepublishpassword)'
     Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+  
