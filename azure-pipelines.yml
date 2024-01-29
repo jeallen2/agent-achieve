@@ -57,4 +57,4 @@ steps:
     ConnectionType: 'PublishProfile'
     PublishProfilePath: '$(publishProfile.secureFilePath)'
     PublishProfilePassword: '$(azurepublishpassword)'
-    packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
