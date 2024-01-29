@@ -55,5 +55,6 @@ steps:
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'PublishProfile'
-    PublishProfilePath: '$(publishProfile.secureFilePath)' 
-    Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    PublishProfilePath: '$(publishProfile.secureFilePath)'
+    PublishProfilePassword: '$(azurepublishpassword)'
+    packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
