@@ -1,20 +1,49 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
 trigger:
-- main
 - Dev
 
 pool:
   vmImage: windows-latest
 
+variables:
+  buildConfiguration: 'Release'
+  solutionPath: '**/*.sln'
+  projectPath: 'AgentAchieve/AgentAchieve.Web/AgentAchieve.Web.csproj' 
+  
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+    performMultiLevelLookup: true
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: '$(solutionPath)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '$(solutionPath)'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
+    zipAfterPublish: true
+
+- task: DownloadSecureFile@1
+  name: publishProfile
+  inputs:
+    secureFile: 'AgentAchieveDev.PublishSettings' 
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'PublishProfile'
+    PublishProfilePath: '$(publishProfile.secureFilePath)' 
+    Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
