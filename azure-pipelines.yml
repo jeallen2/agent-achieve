@@ -12,25 +12,25 @@ variables:
   projectPath: 'AgentAchieve/AgentAchieve.Web/AgentAchieve.Web.csproj' 
   
 steps:
-- task: UseDotNet@2
-  displayName: 'Install .NET Core SDK'
+- task: NuGetAuthenticate@1
   inputs:
-    packageType: 'sdk'
-    version: '8.x'
-    performMultiLevelLookup: true
+    nuGetServiceConnections: 'telerik'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
   inputs:
     command: 'restore'
     projects: '$(solutionPath)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Build'
   inputs:
     command: 'build'
     projects: '$(solutionPath)'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Publish'
   inputs:
     command: 'publish'
     publishWebProjects: true
