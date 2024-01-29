@@ -22,7 +22,7 @@ steps:
     command: 'restore'
     projects: '$(solutionPath)'
     feedsToUse: 'config'
-    nugetConfigPath: 'NuGet.config'
+    nugetConfigPath: 'AgentAchieve/NuGet.config'
     externalFeedCredentials: 'telerik'
 
 - task: DotNetCoreCLI@2
