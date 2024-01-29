@@ -58,4 +58,6 @@ steps:
     PublishProfilePath: '$(publishProfile.secureFilePath)'
     PublishProfilePassword: '$(azurepublishpassword)'
     Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    appType: 'webApp'
+    DeploymentType: zipDeploy
   
