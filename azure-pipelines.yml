@@ -60,4 +60,27 @@ steps:
   inputs:
     command: 'build'
     projects: '$(solutionPath)'
-    arguments: '--configuration $(Release) --no-restore'
+    arguments: '--configuration Release --no-restore'
+
+# - task: DotNetCoreCLI@2
+#   displayName: 'Publish'
+#   inputs:
+#     command: 'publish'
+#     publishWebProjects: true
+#     arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
+#     zipAfterPublish: true
+
+# - task: DownloadSecureFile@1
+#   name: publishProfile
+#   inputs:
+#     secureFile: 'AgentAchieveDevZip.PublishSettings' 
+
+# - task: AzureRmWebAppDeployment@4
+#   inputs:
+#     ConnectionType: 'PublishProfile'
+#     PublishProfilePath: '$(publishProfile.secureFilePath)'
+#     PublishProfilePassword: '$(azurepublishpassword)'
+#     Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+#     appType: 'webApp'
+#     DeploymentType: zipDeploy
+  
