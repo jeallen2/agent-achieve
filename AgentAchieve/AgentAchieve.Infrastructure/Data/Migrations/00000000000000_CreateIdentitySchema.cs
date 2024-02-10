@@ -3,7 +3,7 @@ using System;
 
 #nullable disable
 
-namespace AgentAchieve.WebUi.Server.Migrations
+namespace AgentAchieve.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
     public partial class CreateIdentitySchema : Migration
