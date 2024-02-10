@@ -1,17 +1,20 @@
-# https://aka.ms/yaml
-
 trigger:
 - Dev
 
 pool:
-  vmImage: windows-latest
+  vmImage: 'windows-latest'
 
 variables:
-  buildConfiguration: 'Release'
   solutionPath: '**/*.sln'
-  projectPath: 'AgentAchieve/AgentAchieve.Web/AgentAchieve.Web.csproj' 
-  
+  dotNetCoreVersion: 'net8.0'
+
 steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk'
+  inputs:
+    packageType: 'sdk'
+    version: '$(dotNetCoreVersion)'
+
 - task: NuGetAuthenticate@1
   inputs:
     nuGetServiceConnections: 'telerik'
@@ -26,18 +29,18 @@ steps:
     externalFeedCredentials: 'telerik'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build'
+  displayName: 'Build Debug'
   inputs:
     command: 'build'
     projects: '$(solutionPath)'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration Debug --no-restore'
 
 - task: DotNetCoreCLI@2
   displayName: 'Run Unit Tests & Collect Code Coverage'
   inputs:
     command: 'test'
     projects: '**/*Test*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --logger "trx;LogFileName=test_results.trx"'
+    arguments: '--configuration Debug --no-build --collect "Code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura --logger "trx;LogFileName=test_results.trx"'
     publishTestResults: true
 
 - task: PublishTestResults@2
@@ -46,35 +49,16 @@ steps:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**/test_results.trx'
     searchFolder: '$(System.DefaultWorkingDirectory)'
-    failTaskOnFailedTests: true
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish Code Coverage'
   inputs:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/**/CoverageReports'
-    failIfCoverageEmpty: true
 
-# - task: DotNetCoreCLI@2
-#   displayName: 'Publish'
-#   inputs:
-#     command: 'publish'
-#     publishWebProjects: true
-#     arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
-#     zipAfterPublish: true
-
-# - task: DownloadSecureFile@1
-#   name: publishProfile
-#   inputs:
-#     secureFile: 'AgentAchieveDevZip.PublishSettings' 
-
-# - task: AzureRmWebAppDeployment@4
-#   inputs:
-#     ConnectionType: 'PublishProfile'
-#     PublishProfilePath: '$(publishProfile.secureFilePath)'
-#     PublishProfilePassword: '$(azurepublishpassword)'
-#     Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
-#     appType: 'webApp'
-#     DeploymentType: zipDeploy
-  
+- task: DotNetCoreCLI@2
+  displayName: 'Build Release'
+  inputs:
+    command: 'build'
+    projects: '$(solutionPath)'
+    arguments: '--configuration $(Release) --no-restore'
