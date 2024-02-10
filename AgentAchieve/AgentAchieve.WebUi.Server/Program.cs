@@ -31,11 +31,15 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // todo move to infrastructure
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+// add telerik blazor
+builder.Services.AddTelerikBlazor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseMigrationsEndPoint();
 }
 else
