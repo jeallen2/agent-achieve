@@ -33,11 +33,28 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Run Unit Tests'
+  displayName: 'Run Unit Tests & Collect Code Coverage'
   inputs:
     command: 'test'
     projects: '**/*Test*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --logger "trx;LogFileName=test_results.trx"'
+    publishTestResults: true
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '**/test_results.trx'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    failTaskOnFailedTests: true
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish Code Coverage'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/CoverageReports'
+    failIfCoverageEmpty: true
 
 # - task: DotNetCoreCLI@2
 #   displayName: 'Publish'
