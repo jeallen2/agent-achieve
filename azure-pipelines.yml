@@ -6,14 +6,13 @@ pool:
 
 variables:
   solutionPath: '**/*.sln'
-  dotNetCoreVersion: 'net8.0'
 
 steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk'
   inputs:
     packageType: 'sdk'
-    version: '$(dotNetCoreVersion)'
+    version: '8.x'
 
 - task: NuGetAuthenticate@1
   inputs:
