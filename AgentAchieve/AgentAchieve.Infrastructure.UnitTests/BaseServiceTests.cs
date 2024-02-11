@@ -1,12 +1,8 @@
 ﻿using AgentAchieve.Infrastructure.Identity;
 using AgentAchieve.Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
+[assembly: ExcludeFromCodeCoverage]
 namespace AgentAchieve.Infrastructure.UnitTests
 {
     public class BaseServiceTests : IClassFixture<DatabaseFixture>
