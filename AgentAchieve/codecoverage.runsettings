@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <DataCollectionRunSettings>
+        <DataCollectors>
+            <DataCollector friendlyName="XPlat Code Coverage">
+                <Configuration>
+                    <Exclude>
+                        <!-- Exclude specific assemblies by name -->
+                        <AssemblyPaths>
+                            <Exclude>
+                                <AssemblyPath>.*Tests.*</AssemblyPath>
+                            </Exclude>
+                        </AssemblyPaths>
+                        <!-- Exclude specific files or folders -->
+                        <Sources>
+                            <Exclude>
+                                <!-- Use relative paths or patterns from the project root -->
+                                <Source>**\*Migrations\*</Source>
+                            </Exclude>
+                        </Sources>
+
+                        <ModulePaths>
+                            <Exclude>
+                                <!-- Exclude Humanizer.dll -->
+                                <ModulePath>.*\\Humanizer\.dll</ModulePath>
+                                <!-- Add other DLLs or patterns to exclude as needed -->
+                            </Exclude>
+                        </ModulePaths>
+                    </Exclude>
+                </Configuration>
+            </DataCollector>
+        </DataCollectors>
+    </DataCollectionRunSettings>
+</RunSettings>

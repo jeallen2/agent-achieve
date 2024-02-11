@@ -2,7 +2,6 @@
 using AgentAchieve.Infrastructure.Services;
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: ExcludeFromCodeCoverage]
 namespace AgentAchieve.Infrastructure.UnitTests
 {
     public class BaseServiceTests : IClassFixture<DatabaseFixture>

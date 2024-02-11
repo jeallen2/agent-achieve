@@ -41,8 +41,9 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*Test*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code Coverage"'
+    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code Coverage" --settings $(Build.SourcesDirectory)/codecoverage.runsettings'
     publishTestResults: true
+  
 
 - script: |
     dotnet tool install --global dotnet-reportgenerator-globaltool
