@@ -41,7 +41,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*Test*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code Coverage" --settings $(Build.SourcesDirectory)/codecoverage.runsettings'
+    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code Coverage" --settings $(Build.SourcesDirectory)/AgentAchieve/codecoverage.runsettings'
     publishTestResults: true
   
 
