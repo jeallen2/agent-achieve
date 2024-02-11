@@ -41,8 +41,23 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*Test*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code Coverage" --settings $(Build.SourcesDirectory)/AgentAchieve/codecoverage.runsettings'
     publishTestResults: true
+  
+
+- script: |
+    dotnet tool install --global dotnet-reportgenerator-globaltool
+    reportgenerator "-reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml" "-targetdir:$(Build.ArtifactStagingDirectory)/merged_coverage" "-reporttypes:HtmlInline_AzurePipelines;Cobertura"
+  displayName: 'Create code coverage report'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage report'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Build.ArtifactStagingDirectory)/merged_coverage/Cobertura.xml'
+    reportDirectory: '$(Build.ArtifactStagingDirectory)/merged_coverage'
+
+
 
 # - task: DotNetCoreCLI@2
 #   displayName: 'Publish'
