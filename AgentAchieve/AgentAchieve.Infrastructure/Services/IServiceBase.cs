@@ -1,6 +1,6 @@
 ﻿namespace AgentAchieve.Infrastructure.Services
 {
-    public interface IBaseService<T> where T : class
+    public interface IServiceBase<T> where T : class
     {
         /// <summary>
         /// Deletes an entity by its ID asynchronously.
@@ -21,14 +21,14 @@
         /// </summary>
         /// <param name="id">The ID of the entity to retrieve.</param>
         /// <returns>A task representing the asynchronous operation. The task result contains the retrieved entity.</returns>
-        Task<T> GetByIdAsync(int id);
+        Task<T?> GetByIdAsync(int id);
 
         /// <summary>
         /// Retrieves an entity by its ID asynchronously.
         /// </summary>
         /// <param name="id">The ID of the entity to retrieve.</param>
         /// <returns>A task representing the asynchronous operation. The task result contains the retrieved entity.</returns>
-        Task<T> GetByIdAsync(string id);
+        Task<T?> GetByIdAsync(string id);
 
         /// <summary>
         /// Inserts a new entity asynchronously.
