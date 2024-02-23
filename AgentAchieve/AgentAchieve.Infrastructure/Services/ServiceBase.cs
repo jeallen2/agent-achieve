@@ -1,11 +1,10 @@
-﻿// fix all namespaces in folder?
-namespace AgentAchieve.Infrastructure.Services
+﻿namespace AgentAchieve.Infrastructure.Services
 {
-    public class BaseService<T> : IBaseService<T> where T : class
+    public class ServiceBase<T> : IServiceBase<T> where T : class
     {
         private readonly IRepository<T> _repository;
 
-        public BaseService(IRepository<T> repository)
+        public ServiceBase(IRepository<T> repository)
         {
             _repository = repository;
         }
@@ -15,7 +14,7 @@ namespace AgentAchieve.Infrastructure.Services
         /// </summary>
         /// <param name="id">The ID of the entity to retrieve.</param>
         /// <returns>The retrieved entity.</returns>
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
         }
@@ -25,7 +24,7 @@ namespace AgentAchieve.Infrastructure.Services
         /// </summary>
         /// <param name="id">The ID of the entity to retrieve.</param>
         /// <returns>The retrieved entity.</returns>
-        public async Task<T> GetByIdAsync(string id)
+        public async Task<T?> GetByIdAsync(string id)
         {
             return await _repository.GetByIdAsync(id);
         }

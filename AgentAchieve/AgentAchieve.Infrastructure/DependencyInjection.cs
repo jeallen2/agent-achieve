@@ -22,17 +22,19 @@ namespace AgentAchieve.Infrastructure
                     sqlOptions.EnableRetryOnFailure()));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentityCore<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
 
+            services.AddScoped<IIdentityService, IdentityService>();
+
             return services;
         }
 
-     
-       
 
-       
+
+
+
     }
 }

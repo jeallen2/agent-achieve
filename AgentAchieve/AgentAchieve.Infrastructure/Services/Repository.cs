@@ -27,7 +27,7 @@ namespace AgentAchieve.Infrastructure.Services
         /// </summary>
         /// <param name="id">The ID of the entity.</param>
         /// <returns>The entity with the specified ID, or null if not found.</returns>
-        public async Task<T> GetByIdAsync(object id)
+        public async Task<T?> GetByIdAsync(object id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -68,7 +68,7 @@ namespace AgentAchieve.Infrastructure.Services
         /// <param name="id">The ID of the entity to delete.</param>
         public async Task DeleteAsync(object id)
         {
-            T entityToDelete = await _dbSet.FindAsync(id);
+            T? entityToDelete = await _dbSet.FindAsync(id);
             if (entityToDelete != null)
             {
                 _dbSet.Remove(entityToDelete);

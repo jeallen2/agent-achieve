@@ -1,11 +1,8 @@
 using AgentAchieve.Infrastructure;
-using AgentAchieve.Infrastructure.Data;
-using AgentAchieve.Infrastructure.Identity;
 using AgentAchieve.WebUi.Server.Components;
 using AgentAchieve.WebUi.Server.Components.Account;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,13 +20,23 @@ builder.Services.AddAuthentication(options =>
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
+    .AddGoogle(googleOptions =>
+    {
+        var clientId = builder.Configuration["Authentication:Google:ClientId"];
+        var clientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+
+        if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
+        {
+            throw new InvalidOperationException("Google client ID and client secret are required.");
+        }
+
+        googleOptions.ClientId = clientId;
+        googleOptions.ClientSecret = clientSecret;
+    })
     .AddIdentityCookies();
 
 // add infrastructure
 builder.Services.AddInfrastructure(builder.Configuration);
-
-// todo move to infrastructure
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 // add telerik blazor
 builder.Services.AddTelerikBlazor();

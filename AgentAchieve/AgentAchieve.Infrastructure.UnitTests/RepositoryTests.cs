@@ -1,43 +1,55 @@
 namespace AgentAchieve.Infrastructure.UnitTests
 {
     using Xunit;
-    using Microsoft.EntityFrameworkCore;
     using AgentAchieve.Infrastructure.Services;
     using AgentAchieve.Infrastructure.Data;
     using System.Threading.Tasks;
     using AgentAchieve.Infrastructure.Identity;
-    using Microsoft.Extensions.Options;
+    using Xunit.Abstractions;
+    using FluentAssertions;
+    using Microsoft.Extensions.Logging;
 
-    public class RepositoryTests : IClassFixture<DatabaseFixture>
+    public class RepositoryTests : TestBase<IRepository<ApplicationUser>>, IClassFixture<DatabaseFixture>
     {
         private readonly IRepository<ApplicationUser> _repository;
         private readonly ApplicationDbContext _context;
-        public RepositoryTests(DatabaseFixture fixture)
+        public RepositoryTests(DatabaseFixture fixture, ITestOutputHelper outputHelper) : base(outputHelper)
         {
             _context = fixture.Context;
             _repository = fixture.ApplicationUserRepository;
         }
 
+        [Trait("Description", "Verifies GetByIdAsync returns entity when it exists")]
         [Fact]
         public async Task GetByIdAsync_ReturnsEntity_WhenEntityExists()
         {
+            LogDescription();
+
             // Arrange
             var entityId = Guid.NewGuid().ToString();
             var entity = new ApplicationUser { Id = entityId };
             _context.Users.Add(entity);
             await _context.SaveChangesAsync();
 
+            Logger.LogInformation("Test with entity ID: {Id}", entityId);
+
             // Act
             var result = await _repository.GetByIdAsync(entityId);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(entityId, result.Id);
+            result.Should().NotBeNull("because an entity with this ID exists");
+            result?.Id.Should().Be(entityId, "because the IDs should match");
+
+            // Contextual Logging
+            Logger.LogInformation("Entity Retrieved - ID: {Id}", result?.Id);
         }
 
+        [Trait("Description", "Verifies GetByIdAsync returns null when entity does not exist")]
         [Fact]
         public async Task GetByIdAsync_ReturnsNull_WhenEntityNotExists()
         {
+            LogDescription();
+
             // Arrange 
             var nonExistentId = Guid.NewGuid().ToString();
 
@@ -45,12 +57,18 @@ namespace AgentAchieve.Infrastructure.UnitTests
             var result = await _repository.GetByIdAsync(nonExistentId);
 
             // Assert
-            Assert.Null(result);
+            result.Should().BeNull("because no entity exists with this ID");
+
+            // Contextual Logging
+            Logger.LogInformation("Entity Not Found - ID: {Id}", nonExistentId);
         }
 
+        [Trait("Description", "Verifies GetAllAsync returns all entities")]
         [Fact]
         public async Task GetAllAsync_ReturnsAllEntities()
         {
+            LogDescription();
+
             // Arrange
             var entityId1 = Guid.NewGuid().ToString();
             var entityId2 = Guid.NewGuid().ToString();
@@ -63,15 +81,21 @@ namespace AgentAchieve.Infrastructure.UnitTests
             var result = _repository.GetAll();
 
             // Assert
-            Assert.NotNull(result);
-            Assert.True(result.Count() >= 2);
-            Assert.Contains(entity1, result);
-            Assert.Contains(entity2, result);
+            result.Should().NotBeNull("because entities were added");
+            result.Count().Should().BeGreaterOrEqualTo(2, "because at least two entities were added");
+            result.Should().Contain(entity1, "because entity1 was added");
+            result.Should().Contain(entity2, "because entity2 was added");
+
+            // Contextual Logging
+            Logger.LogInformation("Entities Retrieved - Count: {Count}", result.Count());
         }
 
+        [Trait("Description", "Verifies InsertAsync adds a new entity")]
         [Fact]
         public async Task InsertAsync_AddsNewEntity()
         {
+            LogDescription();
+
             // Arrange
             var entityId = Guid.NewGuid().ToString();
             var entity = new ApplicationUser { Id = entityId };
@@ -82,13 +106,19 @@ namespace AgentAchieve.Infrastructure.UnitTests
 
             // Assert
             var result = await _repository.GetByIdAsync(entityId);
-            Assert.NotNull(result);
-            Assert.Equal(entityId, result.Id);
+            result.Should().NotBeNull("because a new entity should be created");
+            result?.Id.Should().Be(entityId, "because the IDs should match");
+
+            // Contextual Logging
+            Logger.LogInformation("New Entity Added - ID: {Id}", result?.Id);
         }
 
+        [Trait("Description", "Verifies UpdateAsync modifies an existing entity")]
         [Fact]
         public async Task UpdateAsync_UpdatesExistingEntity()
         {
+            LogDescription();
+
             // Arrange
             var entityId = Guid.NewGuid().ToString();
             var entity = new ApplicationUser { Id = entityId, UserName = "OldName" };
@@ -102,13 +132,19 @@ namespace AgentAchieve.Infrastructure.UnitTests
 
             // Assert
             var result = await _repository.GetByIdAsync(entityId);
-            Assert.NotNull(result);
-            Assert.Equal("NewName", result.UserName);
+            result.Should().NotBeNull("because the entity should still exist");
+            result?.UserName.Should().Be("NewName", "because the UserName was updated");
+
+            // Contextual Logging
+            Logger.LogInformation("Entity Updated - ID: {Id}, UserName: {UserName}", result?.Id, result?.UserName);
         }
 
+        [Trait("Description", "Verifies DeleteAsync removes an existing entity")]
         [Fact]
         public async Task DeleteAsync_RemovesExistingEntity()
         {
+            LogDescription();
+
             // Arrange
             var entityId = Guid.NewGuid().ToString();
             var entity = new ApplicationUser { Id = entityId };
@@ -121,7 +157,10 @@ namespace AgentAchieve.Infrastructure.UnitTests
 
             // Assert
             var result = await _repository.GetByIdAsync(entityId);
-            Assert.Null(result);
+            result.Should().BeNull("because the entity should be deleted");
+
+            // Contextual Logging
+            Logger.LogInformation("Entity Deleted - ID: {Id}", entityId);
         }
     }
 }

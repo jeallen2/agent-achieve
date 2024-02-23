@@ -24,7 +24,7 @@
         /// </summary>
         /// <param name="id">The ID of the entity to retrieve.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        Task<T> GetByIdAsync(object id);
+        Task<T?> GetByIdAsync(object id);
 
         /// <summary>
         /// Inserts a new entity asynchronously.
