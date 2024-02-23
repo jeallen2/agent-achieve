@@ -1,35 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <RunSettings>
-    <DataCollectionRunSettings>
-        <DataCollectors>
-            <DataCollector friendlyName="XPlat Code Coverage">
-                <Configuration>
-                    <Exclude>
-                        <!-- Exclude test assemblies by name -->
-                        <AssemblyPaths>
-                            <Exclude>
-                                <!-- This pattern excludes any assembly that contains 'Tests' in its name -->
-                                <AssemblyPath>.*Tests.*</AssemblyPath>
-                            </Exclude>
-                        </AssemblyPaths>
-                        <!-- Exclude specific source files or directories -->
-                        <Sources>
-                            <Exclude>
-                                <!-- This pattern is intended to exclude any files within directories named 'Migrations' -->
-                                <!-- Ensure the use of forward slashes for directory separators and no leading '**/' if you want to match from the project root -->
-                                <Source>.*/Migrations/*</Source>
-                            </Exclude>
-                        </Sources>
-                        <!-- Exclude specific modules by path -->
-                        <ModulePaths>
-                            <Exclude>
-                                <!-- This pattern excludes 'Humanizer.dll' wherever it's found -->
-                                <ModulePath>.*Humanizer\.dll</ModulePath>
-                            </Exclude>
-                        </ModulePaths>
-                    </Exclude>
-                </Configuration>
-            </DataCollector>
-        </DataCollectors>
-    </DataCollectionRunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <!-- [Assembly-Filter]Type-Filter -->
+          <!-- <Exclude>[coverlet.*.tests?]*,[*]Coverlet.Core*,[*]Tests,[Moq]*,[xunit.*]*,[*Humanizer*]*,[*Tests]*</Exclude>  -->
+          <!-- <Include>[coverlet.*]*,[*]Coverlet.Core*</Include> [Assembly-Filter]Type-Filter -->
+          <!-- <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute> -->
+          <!-- Globbing filter -->
+          <ExcludeByFile>**/Data/Migrations/*.cs,**/*.razor,**/Program.cs</ExcludeByFile> 
+          <!-- <IncludeDirectory>../dir1/,../dir2/,</IncludeDirectory> -->
+          <!-- <SingleHit>false</SingleHit> -->
+          <!-- <UseSourceLink>true</UseSourceLink> -->
+          <!-- <IncludeTestAssembly>false</IncludeTestAssembly> -->
+          <SkipAutoProps>true</SkipAutoProps>
+          <!-- <DeterministicReport>false</DeterministicReport> -->
+          <!-- <ExcludeAssembliesWithoutSources>MissingAll,MissingAny,None</ExcludeAssembliesWithoutSources> -->
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
 </RunSettings>

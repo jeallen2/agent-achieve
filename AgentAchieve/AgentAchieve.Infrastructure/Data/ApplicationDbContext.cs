@@ -1,5 +1,4 @@
 using AgentAchieve.Core.Domain;
-using AgentAchieve.Infrastructure.Data.Configurations;
 using AgentAchieve.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

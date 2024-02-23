@@ -1,8 +1,10 @@
 using AgentAchieve.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AgentAchieve.WebUi.Server.Components.Account
 {
+    [ExcludeFromCodeCoverage]
     internal sealed class IdentityUserAccessor(UserManager<ApplicationUser> userManager, IdentityRedirectManager redirectManager)
     {
         public async Task<ApplicationUser> GetRequiredUserAsync(HttpContext context)

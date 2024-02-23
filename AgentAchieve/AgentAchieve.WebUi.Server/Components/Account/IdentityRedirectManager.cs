@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace AgentAchieve.WebUi.Server.Components.Account
 {
+    [ExcludeFromCodeCoverage]
     internal sealed class IdentityRedirectManager(NavigationManager navigationManager)
     {
         public const string StatusCookieName = "Identity.StatusMessage";
