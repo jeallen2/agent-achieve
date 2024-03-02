@@ -1,4 +1,5 @@
-﻿using AgentAchieve.Infrastructure.Identity;
+﻿using AgentAchieve.Core.Domain;
+using AgentAchieve.Infrastructure.Features.Identity;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -6,134 +7,148 @@ using Moq;
 using Moq.AutoMock;
 using System.Security.Claims;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
-namespace AgentAchieve.Infrastructure.UnitTests
+
+namespace AgentAchieve.Infrastructure.UnitTests;
+
+/// <summary>
+/// Represents the unit tests for the <see cref="IdentityService"/> class.
+/// </summary>
+public class IdentityServiceTests : TestBase<IdentityService>
 {
-    public class IdentityServiceTests : TestBase<IdentityService>
+    public IdentityServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : base(outputHelper, dbFixture)
     {
-        public IdentityServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    }
+
+    [Trait("Description", "Verifies successful login with an existing external account")]
+    [Fact]
+    public async Task ProcessExternalLoginAsync_ExistingUser_ReturnsSuccess()
+    {
+        LogDescription();
+
+        // Arrange
+        var email = "test@test.com";
+        Logger.LogInformation("Test with email: {Email}", email);
+        var info = CreateExternalLoginInfo(email);
+        var identityService = CreateIdentityServiceForTest(SignInResult.Success, IdentityResult.Success);
+
+        // Act
+        Logger.LogInformation("Calling ProcessExternalLoginAsync");
+        var result = await identityService.ProcessExternalLoginAsync(info);
+        Logger.LogInformation("ProcessExternalLoginAsync returned status: {Status}", result.Status);
+
+        // Assert
+        var expectedStatus = AuthenticationResultStatus.Success;
+        result.Status.Should().Be(expectedStatus, "because an existing user should be signed in");
+        Logger.LogInformation("Expected status: {ExpectedStatus}, Actual status: {ActualStatus}", expectedStatus, result.Status);
+
+        // Contextual Logging
+        Logger.LogInformation("Login successful with status: {Status}", result.Status);
+    }
+
+
+    [Trait("Description", "Verifies a new account is created for a new user login")]
+    [Fact]
+    public async Task ProcessExternalLoginAsync_NewUser_CreatesAndSignsIn()
+    {
+        LogDescription();
+
+        // Arrange
+        var email = "newuser@test.com";
+        Logger.LogInformation("Test with email: {Email}", email);
+        var info = CreateExternalLoginInfo(email);
+        var identityService = CreateIdentityServiceForTest(SignInResult.Failed, IdentityResult.Success);
+
+        // Act
+        Logger.LogInformation("Calling ProcessExternalLoginAsync");
+        var result = await identityService.ProcessExternalLoginAsync(info);
+
+        // Assert
+        result.Status.Should().Be(AuthenticationResultStatus.NewAccountCreated, "because a new account should be created and signed in");
+        Logger.LogInformation("New Account Created - Status: {Status}", result.Status);
+    }
+
+    [Trait("Description", "Verifies login failure when no email is provided")]
+    [Fact]
+    public async Task ProcessExternalLoginAsync_NoEmail_ReturnsFailure()
+    {
+        LogDescription();
+
+        // Arrange
+        var info = new ExternalLoginInfo(new ClaimsPrincipal(), "TestProvider", "12345", "Test User"); // No email
+        var identityService = CreateIdentityServiceForTest(SignInResult.Failed, IdentityResult.Failed());
+
+        // Act
+        Logger.LogInformation("Calling ProcessExternalLoginAsync");
+        var result = await identityService.ProcessExternalLoginAsync(info);
+
+        // Assert
+        result.Status.Should().Be(AuthenticationResultStatus.Failure, "because login requires an email");
+        Logger.LogInformation("Login Failed - Status: {Status}", result.Status);
+    }
+
+    [Trait("Description", "Verifies login failure when account creation fails")]
+    [Fact]
+    public async Task ProcessExternalLoginAsync_UserCreationFails_ReturnsFailure()
+    {
+        LogDescription();
+
+        // Arrange
+        var email = "newuser2@test.com";
+        Logger.LogInformation("Test with email: {Email}", email);
+        var info = CreateExternalLoginInfo(email);
+        var identityService = CreateIdentityServiceForTest(
+            SignInResult.Failed,
+            IdentityResult.Failed(new IdentityError { Description = "Test Error" }));
+
+        // Act
+        Logger.LogInformation("Calling ProcessExternalLoginAsync");
+        var result = await identityService.ProcessExternalLoginAsync(info);
+
+        // Assert
+        result.Status.Should().Be(AuthenticationResultStatus.Failure, "because login should fail if account creation fails");
+        Logger.LogInformation("Account Creation Failed - Status: {Status}", result.Status);
+    }
+
+
+    /// <summary>
+    /// Represents information about an external login.
+    /// </summary>
+    /// <param name="email">The email associated with the external login.</param>
+    /// <returns>An instance of ExternalLoginInfo.</returns>
+    private ExternalLoginInfo CreateExternalLoginInfo(string email)
+    {
+        return new ExternalLoginInfo(new ClaimsPrincipal(), "TestProvider", "12345", "Test User")
         {
-        }
-
-        [Trait("Description", "Verifies successful login with an existing external account")]
-        [Fact]
-        public async Task ProcessExternalLoginAsync_ExistingUser_ReturnsSuccess()
-        {
-            LogDescription();
-
-            // Setup
-            var email = "test@test.com";
-            Logger.LogInformation("Test with email: {Email}", email);
-            var info = CreateExternalLoginInfo(email);
-            var identityService = CreateIdentityServiceForTest(SignInResult.Success, IdentityResult.Success);
-
-            // Execution
-            Logger.LogInformation("Calling ProcessExternalLoginAsync");
-            var result = await identityService.ProcessExternalLoginAsync(info);
-            Logger.LogInformation("ProcessExternalLoginAsync returned status: {Status}", result.Status);
-
-            // Assertions
-            var expectedStatus = AuthenticationResultStatus.Success;
-            result.Status.Should().Be(expectedStatus, "because an existing user should be signed in");
-            Logger.LogInformation("Expected status: {ExpectedStatus}, Actual status: {ActualStatus}", expectedStatus, result.Status);
-
-            // Contextual Logging
-            Logger.LogInformation("Login successful with status: {Status}", result.Status);
-        }
+            Principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, email) }))
+        };
+    }
 
 
-        [Trait("Description", "Verifies a new account is created for a new user login")]
-        [Fact]
-        public async Task ProcessExternalLoginAsync_NewUser_CreatesAndSignsIn()
-        {
-            LogDescription();
+    /// <summary>
+    /// Creates an instance of IdentityService for testing, with mocked dependencies.
+    /// </summary>
+    /// <param name="signInResult">The result to be returned when SignInManager's ExternalLoginSignInAsync method is called.</param>
+    /// <param name="createUserResult">The result to be returned when UserManager's CreateAsync method is called.</param>
+    /// <returns>An instance of IdentityService with mocked dependencies.</returns>
+    /// <remarks>
+    /// This method sets up mocks for SignInManager and UserManager, which are dependencies of IdentityService.
+    /// The SignInManager mock is set up to return the provided signInResult when its ExternalLoginSignInAsync method is called.
+    /// The UserManager mock is set up to return the provided createUserResult when its CreateAsync method is called.
+    /// These mocks allow us to control the behavior of IdentityService's dependencies during testing, making our tests more reliable and easier to understand.
+    /// </remarks>
+    private IdentityService CreateIdentityServiceForTest(SignInResult signInResult, IdentityResult createUserResult)
+    {
+        Logger.LogInformation("Setting up SignInManager mock with result: {Result}", signInResult);
+        AutoMocker.GetMock<SignInManager<ApplicationUser>>()
+            .Setup(s => s.ExternalLoginSignInAsync(It.IsAny<string>(), It.IsAny<string>(), false, true))
+            .ReturnsAsync(signInResult);
 
-            // Setup
-            var email = "newuser@test.com";
-            Logger.LogInformation("Test with email: {Email}", email);
-            var info = CreateExternalLoginInfo(email);
-            var identityService = CreateIdentityServiceForTest(SignInResult.Failed, IdentityResult.Success);
+        Logger.LogInformation("Setting up UserManager mock with result: {Result}", createUserResult);
+        AutoMocker.GetMock<UserManager<ApplicationUser>>()
+            .Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>()))
+            .ReturnsAsync(createUserResult);
 
-            // Execution
-            Logger.LogInformation("Calling ProcessExternalLoginAsync");
-            var result = await identityService.ProcessExternalLoginAsync(info);
-
-            // Assertions
-            result.Status.Should().Be(AuthenticationResultStatus.NewAccountCreated, "because a new account should be created and signed in");
-
-            // Contextual Logging
-            Logger.LogInformation("New Account Created - Status: {Status}", result.Status);
-        }
-
-        [Trait("Description", "Verifies login failure when no email is provided")]
-        [Fact]
-        public async Task ProcessExternalLoginAsync_NoEmail_ReturnsFailure()
-        {
-            LogDescription();
-
-            // Setup
-            var info = new ExternalLoginInfo(new ClaimsPrincipal(), "TestProvider", "12345", "Test User"); // No email
-            var identityService = CreateIdentityServiceForTest(SignInResult.Failed, IdentityResult.Failed());
-
-            // Execution
-            Logger.LogInformation("Calling ProcessExternalLoginAsync");
-            var result = await identityService.ProcessExternalLoginAsync(info);
-
-            // Assertions
-            result.Status.Should().Be(AuthenticationResultStatus.Failure, "because login requires an email");
-
-            // Contextual Logging
-            Logger.LogInformation("Login Failed - Status: {Status}", result.Status);
-        }
-
-        [Trait("Description", "Verifies login failure when account creation fails")]
-        [Fact]
-        public async Task ProcessExternalLoginAsync_UserCreationFails_ReturnsFailure()
-        {
-            LogDescription();
-
-            // Setup
-            var email = "newuser2@test.com";
-            Logger.LogInformation("Test with email: {Email}", email);
-            var info = CreateExternalLoginInfo(email);
-            var identityService = CreateIdentityServiceForTest(
-                SignInResult.Failed,
-                IdentityResult.Failed(new IdentityError { Description = "Test Error" }));
-
-            // Execution
-            Logger.LogInformation("Calling ProcessExternalLoginAsync");
-            var result = await identityService.ProcessExternalLoginAsync(info);
-
-            // Assertions
-            result.Status.Should().Be(AuthenticationResultStatus.Failure, "because login should fail if account creation fails");
-
-            // Contextual Logging
-            Logger.LogInformation("Account Creation Failed - Status: {Status}", result.Status);
-        }
-
-
-        private ExternalLoginInfo CreateExternalLoginInfo(string email)
-        {
-            return new ExternalLoginInfo(new ClaimsPrincipal(), "TestProvider", "12345", "Test User")
-            {
-                Principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, email) }))
-            };
-        }
-
-        private IdentityService CreateIdentityServiceForTest(SignInResult signInResult, IdentityResult createUserResult)
-        {
-            Logger.LogInformation("Setting up SignInManager mock with result: {Result}", signInResult);
-            AutoMocker.GetMock<SignInManager<ApplicationUser>>()
-                .Setup(s => s.ExternalLoginSignInAsync(It.IsAny<string>(), It.IsAny<string>(), false, true))
-                .ReturnsAsync(signInResult);
-
-            Logger.LogInformation("Setting up UserManager mock with result: {Result}", createUserResult);
-            AutoMocker.GetMock<UserManager<ApplicationUser>>()
-                .Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>()))
-                .ReturnsAsync(createUserResult);
-
-            return AutoMocker.CreateInstance<IdentityService>();
-        }
+        return AutoMocker.CreateInstance<IdentityService>();
     }
 }

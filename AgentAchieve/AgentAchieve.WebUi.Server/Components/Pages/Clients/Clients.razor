@@ -1,0 +1,103 @@
+﻿@page "/clients"
+@using AgentAchieve.Infrastructure.Features.Clients
+@using Microsoft.AspNetCore.Authorization
+@using Telerik.FontIcons;
+
+@inject IClientService DataService;
+
+@attribute [Authorize]
+
+<PageTitle>Manage Clients</PageTitle>
+<div class="container">
+    <TelerikGrid Data="@Data" Pageable="true"
+                 PageSize="10" Sortable="true"
+                 SortMode="@SortMode.Single"
+                 FilterMode="@GridFilterMode.FilterMenu"
+                 Resizable="true"
+                 SelectionMode="GridSelectionMode.Single"
+                 Reorderable="true"
+                 EditMode="@GridEditMode.Popup"
+                 OnUpdate="@Update"
+                 OnCreate="@Add"
+                 OnDelete="@Delete"
+                 ConfirmDelete="true">
+        <GridSettings>
+            <GridPopupEditSettings MaxWidth="1000px"
+                                   MaxHeight="800px"
+                                   Class="custom-popup">
+            </GridPopupEditSettings>
+            <GridPopupEditFormSettings Orientation="@FormOrientation.Horizontal"
+                                       ButtonsLayout="FormButtonsLayout.Center"
+                                       Columns="2">
+            </GridPopupEditFormSettings>
+        </GridSettings>
+        <GridToolBarTemplate>
+            <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
+        </GridToolBarTemplate>    <GridColumns>
+            <GridColumn Field="@nameof(ClientDto.Id)" Editable="false" Visible="false" />
+            <GridColumn Field="@nameof(ClientDto.FirstName)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.LastName)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.PhoneNumber)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.Email)" Width="300px" />
+            <GridColumn Field="@nameof(ClientDto.Street)" Width="300px" />
+            <GridColumn Field="@nameof(ClientDto.City)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.State)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.ZipCode)" Width="180px" />
+            <GridColumn Field="@nameof(ClientDto.Country)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.Birthdate)" Width="180px" DisplayFormat="{0:MM/dd/yyyy}" />
+            <GridColumn Field="@nameof(ClientDto.Occupation)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.Employer)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.ReferredBy)" Width="200px" />
+            <GridColumn Field="@nameof(ClientDto.Notes)" Width="200px" />
+            <GridCommandColumn Width="300px">
+                <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+                <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
+                <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+                <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+            </GridCommandColumn>
+        </GridColumns>
+    </TelerikGrid>
+</div>
+
+
+@code {
+
+    public List<ClientDto> Data { get; set; } = new List<ClientDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadData()
+    {
+        Data = (await DataService.GetAllDtoAsync()).ToList();
+    }
+
+
+    async Task Update(GridCommandEventArgs args)
+    {
+        var client = (ClientDto)args.Item;
+        await DataService.UpdateClientAsync(client);
+
+        await LoadData();
+    }
+
+    async Task Add(GridCommandEventArgs args)
+    {
+        var client = (ClientDto)args.Item;
+        await DataService.CreateClientAsync(client);
+
+        await LoadData();
+    }
+
+    async Task Delete(GridCommandEventArgs args)
+    {
+        var client = (ClientDto)args.Item;
+        await DataService.DeleteClientAsync(client.Id);
+
+        await LoadData();
+    }
+}

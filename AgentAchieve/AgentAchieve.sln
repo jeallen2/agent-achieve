@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentAchieve.Infrastructure
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E6414B29-B9CA-4251-99E9-BDD35D47C338}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentAchieve.Infrastructure.UnitTests", "AgentAchieve.Infrastructure.UnitTests\AgentAchieve.Infrastructure.UnitTests.csproj", "{771C4B1C-0057-4D14-B8F6-1488E95B4346}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentAchieve.Infrastructure.UnitTests", "AgentAchieve.Infrastructure.UnitTests\AgentAchieve.Infrastructure.UnitTests.csproj", "{771C4B1C-0057-4D14-B8F6-1488E95B4346}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentAchieve.Core.UnitTests", "AgentAchieve.Core.UnitTests\AgentAchieve.Core.UnitTests.csproj", "{66B9028E-D698-4F08-B4AC-07CBCBA3036E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentAchieve.Core.UnitTests", "AgentAchieve.Core.UnitTests\AgentAchieve.Core.UnitTests.csproj", "{66B9028E-D698-4F08-B4AC-07CBCBA3036E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentAchieve.WebUi.Server.UnitTests", "AgentAchieve.WebUi.Server.UnitTests\AgentAchieve.WebUi.Server.UnitTests.csproj", "{C85761A6-7527-4BC7-B03C-CEC9A10AEDA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentAchieve.WebUi.Server.UnitTests", "AgentAchieve.WebUi.Server.UnitTests\AgentAchieve.WebUi.Server.UnitTests.csproj", "{C85761A6-7527-4BC7-B03C-CEC9A10AEDA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace AgentAchieve.Infrastructure.Data.Migrations
+namespace AgentAchieve.Infrastructure.Data.Migrations;
+
+/// <inheritdoc />
+public partial class CheckMigration : Migration
 {
     /// <inheritdoc />
-    public partial class CheckMigration : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }

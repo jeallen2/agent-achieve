@@ -1,42 +1,72 @@
-﻿using AgentAchieve.Infrastructure.Data;
-using AgentAchieve.Infrastructure.Identity;
+﻿using AgentAchieve.Core.Domain;
+using AgentAchieve.Infrastructure.Data;
+using AgentAchieve.Infrastructure.Features.Clients;
+using AgentAchieve.Infrastructure.Features.Identity;
+using AgentAchieve.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
-namespace AgentAchieve.Infrastructure
+namespace AgentAchieve.Infrastructure;
+
+/// <summary>
+/// Provides extension methods for configuring dependency injection in the application.
+/// </summary>
+public static class DependencyInjection
 {
-    [ExcludeFromCodeCoverage]
-    public static class DependencyInjection
+    /// <summary>
+    /// Configures the infrastructure services for dependency injection.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+    /// <param name="configuration">The <see cref="IConfiguration"/> containing the application settings.</param>
+    /// <param name="databaseName">The name of the database to use (optional).</param>
+    /// <returns>The modified <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
+        IConfiguration configuration, string? databaseName = null)
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services,
-       IConfiguration configuration)
+        // Database setup
+        if (configuration.GetValue<bool>("UseInMemoryDatabase"))
         {
-            // Database Setup
+            services.AddDbContext<ApplicationDbContext>((sp, options) =>
+            {
+                options.UseInMemoryDatabase(databaseName ?? "AgentAchieveInMemoryDb");
+                options.EnableSensitiveDataLogging();
+                options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+            });
+        }
+        else
+        {
             var connectionName = "DefaultConnection";
             //var connectionName = "AzureConnection";
             var connectionString = configuration.GetConnectionString(connectionName) ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString, sqlOptions =>
-                    sqlOptions.EnableRetryOnFailure()));
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services.AddIdentityCore<ApplicationUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddSignInManager()
-                .AddDefaultTokenProviders();
-
-            services.AddScoped<IIdentityService, IdentityService>();
-
-            return services;
+            services.AddDbContext<ApplicationDbContext>((sp, options) =>
+            {
+                options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
+                options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+            });
         }
 
+        services.AddDatabaseDeveloperPageExceptionFilter();
 
+        services.AddIdentityCore<ApplicationUser>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
 
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+        services.AddScoped<IUnitOfWork, UnitOfWork>()
+            .AddScoped<IRepository<Client>, Repository<Client>>();
 
+        services.AddScoped<IIdentityService, IdentityService>()
+            .AddScoped<ICurrentUserService, CurrentUserService>()
+            .AddScoped<IClientService, ClientService>()
+            .AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>()
+            ;
+
+        return services;
     }
 }
