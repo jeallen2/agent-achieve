@@ -1,0 +1,111 @@
+﻿@page "/properties"
+@using AgentAchieve.Infrastructure.Features.Properties
+@using AgentAchieve.Infrastructure.Features.Propertys
+@using Microsoft.AspNetCore.Authorization
+@using Telerik.FontIcons;
+
+@inject IPropertyService DataService;
+
+@attribute [Authorize]
+
+<PageTitle>Manage Properties</PageTitle>
+<div class="container">
+    <TelerikGrid Data="@Data" Pageable="true"
+                 PageSize="10" Sortable="true"
+                 SortMode="@SortMode.Single"
+                 FilterMode="@GridFilterMode.FilterMenu"
+                 Resizable="true"
+                 SelectionMode="GridSelectionMode.Single"
+                 Reorderable="true"
+                 EditMode="@GridEditMode.Popup"
+                 OnUpdate="@Update"
+                 OnCreate="@Add"
+                 OnDelete="@Delete"
+                 ConfirmDelete="true">
+        <GridSettings>
+            <GridPopupEditSettings MaxWidth="1000px"
+                                   MaxHeight="800px"
+                                   Class="custom-popup">
+            </GridPopupEditSettings>
+            <GridPopupEditFormSettings Orientation="@FormOrientation.Horizontal"
+                                       ButtonsLayout="FormButtonsLayout.Center"
+                                       Columns="2">
+            </GridPopupEditFormSettings>
+        </GridSettings>
+        <GridToolBarTemplate>
+            <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
+        </GridToolBarTemplate>
+        <GridColumns>
+            <GridColumn Field="@nameof(PropertyDto.Id)" Editable="false" Visible="false" />
+            <GridColumn Field="@nameof(PropertyDto.Street)" Width="300px" />
+            <GridColumn Field="@nameof(PropertyDto.City)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.State)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.ZipCode)" Width="180px" />
+            <GridColumn Field="@nameof(PropertyDto.Country)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.YearBuilt)" 
+                        Width="180px" 
+                        DisplayFormat="{0:yyyy}" 
+                        EditorType="@GridEditorType.DatePicker">
+                <EditorTemplate>
+                    @{
+                        PropertyToEdit = context as PropertyDto ?? new PropertyDto();
+                        if (PropertyToEdit != null)
+                        {
+                            <TelerikDateInput Format="yyyy" @bind-Value="@PropertyToEdit.YearBuilt" />
+                        }
+                    }
+                </EditorTemplate>
+            </GridColumn>
+            <GridColumn Field="@nameof(PropertyDto.Bedrooms)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.FullBathrooms)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.HalfBathrooms)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.SquareFootage)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.NumberOfLevels)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.LotSize)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.PropertyType)" Width="200px" />
+            <GridColumn Field="@nameof(PropertyDto.Description)" Width="200px" />
+            <GridCommandColumn Width="300px">
+                <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+                <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
+                <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+                <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+            </GridCommandColumn>
+        </GridColumns>
+    </TelerikGrid>
+</div>
+
+@code {
+    public List<PropertyDto> Data { get; set; } = new List<PropertyDto>();
+    private PropertyDto PropertyToEdit { get; set; } = new PropertyDto();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadData()
+    {
+        Data = (await DataService.GetAllDtoAsync()).ToList(); 
+    }
+
+    async Task Update(GridCommandEventArgs args)
+    {
+        var property = (PropertyDto)args.Item;
+        await DataService.UpdatePropertyAsync(property); 
+        await LoadData();
+    }
+
+    async Task Add(GridCommandEventArgs args)
+    {
+        var property = (PropertyDto)args.Item;
+        await DataService.CreatePropertyAsync(property); 
+        await LoadData();
+    }
+
+    async Task Delete(GridCommandEventArgs args)
+    {
+        var property = (PropertyDto)args.Item;
+        await DataService.DeletePropertyAsync(property.Id); 
+        await LoadData();
+    }
+}

@@ -2,6 +2,7 @@
 using AgentAchieve.Infrastructure.Data;
 using AgentAchieve.Infrastructure.Features.Clients;
 using AgentAchieve.Infrastructure.Features.Identity;
+using AgentAchieve.Infrastructure.Features.Propertys;
 using AgentAchieve.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,7 @@ public static class DependencyInjection
         services.AddScoped<IIdentityService, IdentityService>()
             .AddScoped<ICurrentUserService, CurrentUserService>()
             .AddScoped<IClientService, ClientService>()
+            .AddScoped<IPropertyService, PropertyService>()
             .AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>()
             ;
 

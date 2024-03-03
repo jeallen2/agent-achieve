@@ -6,15 +6,10 @@ namespace AgentAchieve.Infrastructure.Features.Identity;
 /// <summary>
 /// Service for retrieving information about the current user.
 /// </summary>
-public class CurrentUserService : ICurrentUserService
+public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
 {
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     /// <summary>
     /// Gets the ID of the current user asynchronously.

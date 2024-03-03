@@ -2,6 +2,7 @@
 using AgentAchieve.Infrastructure.Data;
 using AgentAchieve.Infrastructure.Features.Clients;
 using AgentAchieve.Infrastructure.Features.Identity;
+using AgentAchieve.Infrastructure.Features.Propertys;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -166,6 +167,16 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
     {
         var scope = _scopeFactory.CreateScope();
         return scope.ServiceProvider.GetRequiredService<IClientService>();
+    }
+
+    /// <summary>
+    /// Creates a property service.
+    /// </summary>
+    /// <returns>The created client service.</returns>
+    public IPropertyService CreatePropertyService()
+    {
+        var scope = _scopeFactory.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<IPropertyService>();
     }
 
     /// <summary>

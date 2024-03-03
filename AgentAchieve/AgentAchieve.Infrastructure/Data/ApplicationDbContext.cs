@@ -11,20 +11,22 @@ namespace AgentAchieve.Infrastructure.Data;
 /// <summary>
 /// Represents the application's database context.
 /// </summary>
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+/// <remarks>
+/// Initializes a new instance of the <see cref="ApplicationDbContext"/> class.
+/// </remarks>
+/// <param name="options">The options to be used by a <see cref="DbContext"/>.</param>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class.
-    /// </summary>
-    /// <param name="options">The options to be used by a <see cref="DbContext"/>.</param>
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-    }
 
     /// <summary>
     /// Gets or sets the clients in the database.
     /// </summary>
     public DbSet<Client> Clients { get; set; }
+
+    /// <summary>
+    /// Gets or sets the properties in the database.
+    /// </summary>
+    public DbSet<Property> Properties { get; set; }
 
     /// <summary>
     /// Configures the model that was discovered by convention from the entity types

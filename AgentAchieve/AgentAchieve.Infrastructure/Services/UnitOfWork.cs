@@ -9,24 +9,17 @@ namespace AgentAchieve.Infrastructure.Services;
 /// <summary>
 /// Represents a unit of work for managing database operations.
 /// </summary>
-public class UnitOfWork : IDisposable, IUnitOfWork
+/// <remarks>
+/// Initializes a new instance of the <see cref="UnitOfWork"/> class.
+/// </remarks>
+/// <param name="context">The application database context.</param>
+/// <param name="logger">The logger for logging errors.</param>
+public class UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger) : IDisposable, IUnitOfWork
 {
-    private readonly ApplicationDbContext _context;
-    private ConcurrentDictionary<Type, object> _repositories;
+    private readonly ApplicationDbContext _context = context;
+    private ConcurrentDictionary<Type, object> _repositories = new ConcurrentDictionary<Type, object>();
     private bool _disposed = false;
-    private readonly ILogger<UnitOfWork> _logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
-    /// </summary>
-    /// <param name="context">The application database context.</param>
-    /// <param name="logger">The logger for logging errors.</param>
-    public UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger)
-    {
-        _context = context;
-        _repositories = new ConcurrentDictionary<Type, object>();
-        _logger = logger;
-    }
+    private readonly ILogger<UnitOfWork> _logger = logger;
 
     /// <summary>
     /// Gets the repository for the specified entity type.

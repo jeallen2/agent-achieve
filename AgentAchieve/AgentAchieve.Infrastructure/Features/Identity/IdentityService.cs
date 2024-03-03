@@ -37,30 +37,22 @@ public class AuthenticationResult
 /// Service providing methods related to Authentication actions 
 /// (and in the future, other user or role operations)
 /// </summary>
-public class IdentityService : IIdentityService
+/// <remarks>
+/// Initializes a new instance of the <see cref="IdentityService"/> class.
+/// </remarks>
+/// <param name="signInManager">The sign-in manager.</param>
+/// <param name="userManager">The user manager.</param>
+/// <param name="logger">The logger.</param>
+public class IdentityService(
+    SignInManager<ApplicationUser> signInManager,
+    UserManager<ApplicationUser> userManager,
+    ILogger<IdentityService> logger,
+    ICurrentUserService currentUserService) : IIdentityService
 {
-    internal readonly SignInManager<ApplicationUser> _signInManager;
-    internal readonly UserManager<ApplicationUser> _userManager;
-    private readonly ILogger<IdentityService> _logger;
-    private readonly ICurrentUserService currentUserService;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="IdentityService"/> class.
-    /// </summary>
-    /// <param name="signInManager">The sign-in manager.</param>
-    /// <param name="userManager">The user manager.</param>
-    /// <param name="logger">The logger.</param>
-    public IdentityService(
-        SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager,
-        ILogger<IdentityService> logger,
-        ICurrentUserService currentUserService)
-    {
-        _signInManager = signInManager;
-        _userManager = userManager;
-        _logger = logger;
-        this.currentUserService = currentUserService;
-    }
+    internal readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    internal readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly ILogger<IdentityService> _logger = logger;
+    private readonly ICurrentUserService currentUserService = currentUserService;
 
     /// <summary>
     /// Processes the external login asynchronously.

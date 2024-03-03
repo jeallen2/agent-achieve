@@ -9,16 +9,14 @@ namespace AgentAchieve.Infrastructure.Features.Clients
     /// <summary>
     /// Represents a service for managing clients.
     /// </summary>
-    public class ClientService : ServiceBase<Client>, IClientService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ClientService"/> class.
+    /// </remarks>
+    /// <param name="unitOfWork">The unit of work.</param>
+    /// <param name="mapper">The mapper.</param>
+    /// <param name="logger">The logger.</param>
+    public class ClientService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ClientService> logger) : ServiceBase<Client>(unitOfWork, mapper, logger), IClientService
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClientService"/> class.
-        /// </summary>
-        /// <param name="unitOfWork">The unit of work.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="logger">The logger.</param>
-        public ClientService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ClientService> logger)
-            : base(unitOfWork, mapper, logger) { }
 
         /// <summary>
         /// Gets all clients as DTOs asynchronously.

@@ -14,12 +14,8 @@ namespace AgentAchieve.Infrastructure.UnitTests;
 /// <summary>
 /// Represents the unit tests for the <see cref="IdentityService"/> class.
 /// </summary>
-public class IdentityServiceTests : TestBase<IdentityService>
+public class IdentityServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : TestBase<IdentityService>(outputHelper, dbFixture)
 {
-    public IdentityServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : base(outputHelper, dbFixture)
-    {
-    }
-
     [Trait("Description", "Verifies successful login with an existing external account")]
     [Fact]
     public async Task ProcessExternalLoginAsync_ExistingUser_ReturnsSuccess()

@@ -8,13 +8,8 @@ using Xunit.Abstractions;
 /// This class contains unit tests for the ClientService class.
 /// </summary>
 namespace AgentAchieve.Infrastructure.UnitTests;
-public class ClientServiceTests : TestBase<ClientService>
+public class ClientServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : TestBase<ClientService>(outputHelper, dbFixture)
 {
-
-    public ClientServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : base(outputHelper, dbFixture)
-    {
-    }
-
     [Trait("Description", "Verifies that all clients are returned")]
     [Fact]
     public async Task GetAllDtoAsync_ShouldReturnAllClients()

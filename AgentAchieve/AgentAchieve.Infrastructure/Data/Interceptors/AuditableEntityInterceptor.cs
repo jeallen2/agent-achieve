@@ -6,18 +6,13 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 /// <summary>
 /// Interceptor for auditing changes made to entities implementing the <see cref="BaseAuditableEntity{TKey}"/> interface.
 /// </summary>
-public class AuditableEntityInterceptor : ISaveChangesInterceptor
+/// <remarks>
+/// Initializes a new instance of the <see cref="AuditableEntityInterceptor"/> class.
+/// </remarks>
+/// <param name="currentUserService">The current user service.</param>
+public class AuditableEntityInterceptor(ICurrentUserService currentUserService) : ISaveChangesInterceptor
 {
-    private readonly ICurrentUserService _currentUserService;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AuditableEntityInterceptor"/> class.
-    /// </summary>
-    /// <param name="currentUserService">The current user service.</param>
-    public AuditableEntityInterceptor(ICurrentUserService currentUserService)
-    {
-        _currentUserService = currentUserService;
-    }
+    private readonly ICurrentUserService _currentUserService = currentUserService;
 
     /// <inheritdoc/>
     public Task SaveChangesFailedAsync(DbContextErrorEventData eventData, CancellationToken cancellationToken = default)
