@@ -1,10 +1,8 @@
 ﻿using AgentAchieve.Core.Domain;
-using AgentAchieve.Infrastructure.Features.Properties; // Adjust namespace if needed
-using AgentAchieve.Infrastructure.Features.Propertys;
+using AgentAchieve.Infrastructure.Features.Properties; 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace AgentAchieve.Infrastructure.UnitTests;
 public class PropertyServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : TestBase<PropertyService>(outputHelper, dbFixture)

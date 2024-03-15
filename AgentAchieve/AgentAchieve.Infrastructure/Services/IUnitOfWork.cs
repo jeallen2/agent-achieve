@@ -22,5 +22,5 @@ public interface IUnitOfWork
     /// </summary>
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <returns>An instance of the repository for the specified entity type.</returns>
-    IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity;
+    IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntityPk;
 }

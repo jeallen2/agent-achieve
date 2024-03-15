@@ -13,4 +13,10 @@ public interface IIdentityService
     /// <param name="info">The login information obtained from the external provider</param>
     /// <returns>An AuthenticationResult describing the operation's status</returns>
     Task<AuthenticationResult> ProcessExternalLoginAsync(ExternalLoginInfo info);
+
+    /// <summary>
+    /// Gets Users
+    /// </summary>
+    /// <returns></returns>
+    Task<IEnumerable<ApplicationUserDto>> GetUsers();
 }

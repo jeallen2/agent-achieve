@@ -6,7 +6,7 @@ namespace AgentAchieve.Infrastructure.Services;
 /// Represents a base service interface for CRUD operations on entities.
 /// </summary>
 /// <typeparam name="TEntity">The type of entity.</typeparam>
-public interface IServiceBase<TEntity> where TEntity : class, IEntity
+public interface IServiceBase<TEntity> where TEntity : class, IEntityPk
 {
     /// <summary>
     /// Retrieves an entity by its ID asynchronously.

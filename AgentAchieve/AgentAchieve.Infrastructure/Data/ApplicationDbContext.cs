@@ -29,6 +29,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Property> Properties { get; set; }
 
     /// <summary>
+    /// Gets or sets the sales in the database.
+    /// </summary>
+    public DbSet<Sale> Sales { get; set; }
+
+    /// <summary>
     /// Configures the model that was discovered by convention from the entity types
     /// exposed in <see cref="DbSet{TEntity}"/> properties on your derived context.
     /// </summary>

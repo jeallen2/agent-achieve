@@ -2,7 +2,8 @@
 using AgentAchieve.Infrastructure.Data;
 using AgentAchieve.Infrastructure.Features.Clients;
 using AgentAchieve.Infrastructure.Features.Identity;
-using AgentAchieve.Infrastructure.Features.Propertys;
+using AgentAchieve.Infrastructure.Features.Properties;
+using AgentAchieve.Infrastructure.Features.Sales;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -122,7 +123,7 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <param name="id">The ID of the entity.</param>
     /// <returns>The found entity, or null if no entity was found.</returns>
-    protected async Task<TEntity?> FindAsync<TEntity>(object id) where TEntity : class, IEntity
+    protected async Task<TEntity?> FindAsync<TEntity>(object id) where TEntity : class, IEntityPk
     {
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -135,7 +136,7 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <param name="entity">The entity to add.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    protected async Task AddAsync<TEntity>(TEntity entity) where TEntity : class, IEntity
+    protected async Task AddAsync<TEntity>(TEntity entity) where TEntity : class, IEntityPk
     {
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -180,6 +181,16 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
     }
 
     /// <summary>
+    /// Creates a sale service.
+    /// </summary>
+    /// <returns>The created sale service.</returns>
+    public ISaleService CreateSaleService()
+    {
+        var scope = _scopeFactory.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<ISaleService>();
+    }
+
+    /// <summary>
     /// Performs the necessary cleanup operations when the object is being disposed.
     /// </summary>
     public void Dispose()
@@ -187,5 +198,6 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         context.Database.EnsureDeleted();
+        GC.SuppressFinalize(this);
     }
 }

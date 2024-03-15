@@ -1,6 +1,7 @@
 ﻿using AgentAchieve.Core.Common;
 using AgentAchieve.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AgentAchieve.Infrastructure.Services;
 
@@ -9,7 +10,7 @@ namespace AgentAchieve.Infrastructure.Services;
 /// Generic repository implementation for CRUD operations on entities.
 /// </summary>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
-public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEntity : class, IEntity
+public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEntity : class, IEntityPk
 {
     private readonly ApplicationDbContext _context;
     private readonly DbSet<TEntity> _dbSet;
@@ -78,16 +79,18 @@ public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEnti
         }
     }
 
-    
+
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
+    [ExcludeFromCodeCoverage]
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

@@ -6,7 +6,7 @@ namespace AgentAchieve.Infrastructure.Services;
 /// Represents a generic repository interface for accessing and manipulating entities.
 /// </summary>
 /// <typeparam name="TEntity">The type of entity.</typeparam>
-public interface IRepository<TEntity> where TEntity : class, IEntity
+public interface IRepository<TEntity> where TEntity : class, IEntityPk
 {
     /// <summary>
     /// Retrieves an entity by its unique identifier asynchronously.

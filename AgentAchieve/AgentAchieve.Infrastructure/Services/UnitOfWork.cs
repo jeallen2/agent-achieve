@@ -2,6 +2,7 @@
 using AgentAchieve.Infrastructure.Data;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace AgentAchieve.Infrastructure.Services;
@@ -26,7 +27,7 @@ public class UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger
     /// </summary>
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <returns>The repository for the specified entity type.</returns>
-    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity
+    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntityPk
     {
         return (IRepository<TEntity>)_repositories.GetOrAdd(typeof(TEntity), t => new Repository<TEntity>(_context));
     }
@@ -51,6 +52,7 @@ public class UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger
     /// <summary>
     /// Disposes the unit of work and releases any resources held by it.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public void Dispose()
     {
         Dispose(true);
@@ -61,6 +63,7 @@ public class UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger
     /// Disposes the unit of work and releases any resources held by it.
     /// </summary>
     /// <param name="disposing">A flag indicating whether the method is called from the <see cref="Dispose"/> method.</param>
+    [ExcludeFromCodeCoverage]
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

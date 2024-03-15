@@ -1,8 +1,10 @@
 ﻿using AgentAchieve.Core.Domain;
 using AgentAchieve.Infrastructure.Data;
+using AgentAchieve.Infrastructure.Data.Interceptors;
 using AgentAchieve.Infrastructure.Features.Clients;
 using AgentAchieve.Infrastructure.Features.Identity;
-using AgentAchieve.Infrastructure.Features.Propertys;
+using AgentAchieve.Infrastructure.Features.Properties;
+using AgentAchieve.Infrastructure.Features.Sales;
 using AgentAchieve.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -66,6 +68,8 @@ public static class DependencyInjection
             .AddScoped<ICurrentUserService, CurrentUserService>()
             .AddScoped<IClientService, ClientService>()
             .AddScoped<IPropertyService, PropertyService>()
+            .AddScoped<ISaleService, SaleService>()
+
             .AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>()
             ;
 

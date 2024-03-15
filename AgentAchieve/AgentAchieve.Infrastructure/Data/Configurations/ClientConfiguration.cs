@@ -7,7 +7,7 @@ public class ClientConfiguration : BaseAuditableEntityConfiguration<Client>
 {
     public override void Configure(EntityTypeBuilder<Client> builder)
     {
-        base.Configure(builder); // Call the base configuration first
+        base.Configure(builder); // Call the base configuration 
 
         // Other client-specific configurations can be added here
     }

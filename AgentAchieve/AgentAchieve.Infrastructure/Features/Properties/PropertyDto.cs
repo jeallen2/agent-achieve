@@ -10,7 +10,7 @@ namespace AgentAchieve.Infrastructure.Features.Properties;
 /// Represents a data transfer object (DTO) for a property.
 /// </summary>
 [Description("Properties")]
-public class PropertyDto : IEntity<int>
+public class PropertyDto : IEntityPk
 {
     /// <summary>
     /// Gets or sets the ID of the property.
@@ -116,6 +116,9 @@ public class PropertyDto : IEntity<int>
     /// </summary>
     [Display(Name = "Description")]
     public string? Description { get; set; }
+
+    [Display(Name = "Full Address")]
+    public string FullAddress => $"{Street} {City}, {State} {ZipCode}";
 
     /// <summary>
     /// Represents a mapping configuration for the <see cref="Property"/> and <see cref="PropertyDto"/> classes.

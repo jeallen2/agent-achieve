@@ -1,5 +1,4 @@
 ﻿using AgentAchieve.Core.Common;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace AgentAchieve.Core.Domain;
@@ -29,34 +28,30 @@ public enum PropertyType
 /// <summary>
 /// Represents a property with its address and details.
 /// </summary>
-public class Property(string street, string city, string state, string zipCode) : BaseAuditableEntity<int>
+public class Property(string street, string city, string state, string zipCode) : BaseAuditableEntity
 {
 
     /// <summary>
     /// Gets or sets the street address.
     /// </summary>
-    [Required]
     [MaxLength(100)]
     public string Street { get; set; } = street;
 
     /// <summary>
     /// Gets or sets the city.
     /// </summary>
-    [Required]
     [MaxLength(50)]
     public string City { get; set; } = city;
 
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    [Required]
     [MaxLength(2)]
     public string State { get; set; } = state;
 
     /// <summary>
     /// Gets or sets the ZIP code.
     /// </summary>
-    [Required]
     [MaxLength(10)]
     public string ZipCode { get; set; } = zipCode;
 

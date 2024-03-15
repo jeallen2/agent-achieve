@@ -1,8 +1,10 @@
 ﻿using AgentAchieve.Core.Domain;
 using AgentAchieve.Infrastructure.Features.Identity;
+using AutoMapper;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using MockQueryable.Moq;
 using Moq;
 using Moq.AutoMock;
 using System.Security.Claims;
@@ -106,13 +108,58 @@ public class IdentityServiceTests(ITestOutputHelper outputHelper, DatabaseFixtur
         Logger.LogInformation("Account Creation Failed - Status: {Status}", result.Status);
     }
 
+    [Trait("Description", "Verifies retrieval of all users")]
+    [Fact]
+    public async Task GetUsers_ShouldReturnListOfApplicationUserDto()
+    {
+        LogDescription();
+
+        // Arrange
+        Logger.LogInformation("Setting up test data and mocks");
+        var autoMocker = new AutoMocker();
+        var userManagerMock = autoMocker.GetMock<UserManager<ApplicationUser>>();
+        var currentUserServiceMock = autoMocker.GetMock<ICurrentUserService>();
+        var signInManagerMock = autoMocker.GetMock<SignInManager<ApplicationUser>>();
+
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<ApplicationUser, ApplicationUserDto>();
+        });
+
+        var mapper = config.CreateMapper();
+
+        var identityService = new IdentityService(signInManagerMock.Object, userManagerMock.Object, Logger, currentUserServiceMock.Object, mapper);
+
+        var users = new List<ApplicationUser>
+    {
+        new ApplicationUser { Id = "1", UserName = "user1" },
+        new ApplicationUser { Id = "2", UserName = "user2" },
+        new ApplicationUser { Id = "3", UserName = "user3" }
+    };
+
+        var mockUsers = users.AsQueryable().BuildMockDbSet();
+        userManagerMock.Setup(u => u.Users).Returns(mockUsers.Object);
+
+        // Act
+        Logger.LogInformation("Calling GetUsers");
+        var result = await identityService.GetUsers();
+
+        // Assert
+        Logger.LogInformation("Asserting results");
+        var expectedUsers = mapper.Map<List<ApplicationUserDto>>(users);
+        result.Should().HaveCount(expectedUsers.Count, "because all users should be returned");
+        result.Should().OnlyContain(u => expectedUsers.Any(eu => eu.Id == u.Id && eu.UserName == u.UserName), "because the returned users should match the test data");
+
+        // Contextual Logging
+        Logger.LogInformation("GetUsers returned {Count} users", result.Count());
+    }
 
     /// <summary>
     /// Represents information about an external login.
     /// </summary>
     /// <param name="email">The email associated with the external login.</param>
     /// <returns>An instance of ExternalLoginInfo.</returns>
-    private ExternalLoginInfo CreateExternalLoginInfo(string email)
+    private static ExternalLoginInfo CreateExternalLoginInfo(string email)
     {
         return new ExternalLoginInfo(new ClaimsPrincipal(), "TestProvider", "12345", "Test User")
         {

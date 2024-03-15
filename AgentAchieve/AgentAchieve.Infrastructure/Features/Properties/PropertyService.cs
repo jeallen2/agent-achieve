@@ -1,11 +1,10 @@
 ﻿using AgentAchieve.Core.Domain;
-using AgentAchieve.Infrastructure.Features.Properties;
 using AgentAchieve.Infrastructure.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace AgentAchieve.Infrastructure.Features.Propertys
+namespace AgentAchieve.Infrastructure.Features.Properties
 {
     /// <summary>
     /// Represents a service for managing propertys.

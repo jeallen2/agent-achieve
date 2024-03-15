@@ -3,6 +3,8 @@ using AgentAchieve.Infrastructure.Features.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
+namespace AgentAchieve.Infrastructure.Data.Interceptors;
+
 /// <summary>
 /// Interceptor for auditing changes made to entities implementing the <see cref="BaseAuditableEntity{TKey}"/> interface.
 /// </summary>
@@ -33,18 +35,21 @@ public class AuditableEntityInterceptor(ICurrentUserService currentUserService) 
 
         var userId = await _currentUserService.GetUserIdAsync();
 
-        foreach (var entry in context.ChangeTracker.Entries<BaseAuditableEntity<int>>())
+        foreach (var entry in context.ChangeTracker.Entries<BaseAuditableEntity>())
         {
+            var now = DateTime.Now;
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.Created = DateTime.Now;
-                    entry.Entity.CreatedBy = userId;
+                    entry.Entity.Created = now;
+                    entry.Entity.CreatedById = userId;
+                    entry.Entity.LastModified = now;
+                    entry.Entity.LastModifiedById = userId;
                     break;
 
                 case EntityState.Modified:
-                    entry.Entity.LastModified = DateTime.Now;
-                    entry.Entity.LastModifiedBy = userId; 
+                    entry.Entity.LastModified = now;
+                    entry.Entity.LastModifiedById = userId; 
                     break;
             }
         }

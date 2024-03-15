@@ -1,5 +1,8 @@
 ﻿using AgentAchieve.Core.Domain;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
@@ -47,12 +50,14 @@ public class IdentityService(
     SignInManager<ApplicationUser> signInManager,
     UserManager<ApplicationUser> userManager,
     ILogger<IdentityService> logger,
-    ICurrentUserService currentUserService) : IIdentityService
+    ICurrentUserService currentUserService,
+    IMapper mapper) : IIdentityService
 {
     internal readonly SignInManager<ApplicationUser> _signInManager = signInManager;
     internal readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly ILogger<IdentityService> _logger = logger;
     private readonly ICurrentUserService currentUserService = currentUserService;
+    private readonly IMapper mapper = mapper;
 
     /// <summary>
     /// Processes the external login asynchronously.
@@ -68,6 +73,15 @@ public class IdentityService(
         }
 
         return await CreateAndSignInNewAccount(info);
+    }
+
+    /// <summary>
+    /// Gets Users
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IEnumerable<ApplicationUserDto>> GetUsers()
+    {
+        return await _userManager.Users.ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider).ToListAsync();
     }
 
     /// <summary>
@@ -87,7 +101,7 @@ public class IdentityService(
     /// <returns>The authentication result.</returns>
     private async Task<AuthenticationResult> CreateAndSignInNewAccount(ExternalLoginInfo info)
     {
-        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        var email = info.Principal.FindFirstValue(ClaimTypes.Email)?.ToLower();
         if (string.IsNullOrEmpty(email))
         {
             var errorMessage = "Error: No email returned from external provider.";
@@ -99,8 +113,11 @@ public class IdentityService(
             };
         }
 
+        var surname = info.Principal.FindFirstValue(ClaimTypes.Surname)?.ToUpper();
+        var givenName = info.Principal.FindFirstValue(ClaimTypes.GivenName)?.ToUpper();
+       
         // Create new user
-        var user = new ApplicationUser { UserName = email, Email = email };
+        var user = new ApplicationUser { UserName = email, Email = email, FirstName = givenName, LastName = surname };
         var createResult = await _userManager.CreateAsync(user);
 
         if (createResult.Succeeded)

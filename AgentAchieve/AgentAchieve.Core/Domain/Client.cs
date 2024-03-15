@@ -6,27 +6,24 @@ namespace AgentAchieve.Core.Domain;
 /// <summary>
 /// Represents a client entity.
 /// </summary>
-public class Client(string firstName, string lastName, string phoneNumber) : BaseAuditableEntity<int>
+public class Client(string firstName, string lastName, string phoneNumber) : BaseAuditableEntity
 {
 
     /// <summary>
     /// Gets or sets the first name of the client.
     /// </summary>
-    [Required]
     [MaxLength(100)]
     public string FirstName { get; set; } = firstName;
 
     /// <summary>
     /// Gets or sets the last name of the client.
     /// </summary>
-    [Required]
     [MaxLength(100)]
     public string LastName { get; set; } = lastName;
 
     /// <summary>
     /// Gets or sets the phone number of the client.
     /// </summary>
-    [Required]
     [MaxLength(15)]
     public string PhoneNumber { get; set; } = phoneNumber;
 

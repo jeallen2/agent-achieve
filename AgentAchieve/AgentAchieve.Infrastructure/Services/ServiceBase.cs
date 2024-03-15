@@ -9,7 +9,7 @@ namespace AgentAchieve.Infrastructure.Services;
 /// Base class for services that operate on entities.
 /// </summary>
 /// <typeparam name="TEntity">The type of entity.</typeparam>
-public abstract class ServiceBase<TEntity> : IServiceBase<TEntity> where TEntity : class, IEntity
+public abstract class ServiceBase<TEntity> : IServiceBase<TEntity> where TEntity : class, IEntityPk
 {
     protected readonly IUnitOfWork _unitOfWork;
     protected readonly IRepository<TEntity> _repository;

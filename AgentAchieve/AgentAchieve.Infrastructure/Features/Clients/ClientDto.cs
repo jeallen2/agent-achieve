@@ -10,7 +10,7 @@ namespace AgentAchieve.Infrastructure.Features.Clients;
 /// Represents a data transfer object (DTO) for the Client entity.
 /// </summary>
 [Description("Clients")]
-public class ClientDto : IEntity<int>
+public class ClientDto : IEntityPk
 {
     /// <summary>
     /// Gets or sets the ID of the client.
@@ -116,6 +116,9 @@ public class ClientDto : IEntity<int>
     /// </summary>
     [Display(Name = "Notes")]
     public string? Notes { get; set; }
+
+    [Display(Name = "Full Name and Phone")]
+    public string FullNameAndPhone => $"{LastName}, {FirstName}; Phone: {PhoneNumber}";
 
     /// <summary>
     /// Represents a mapping configuration for the <see cref="Client"/> and <see cref="ClientDto"/> classes.
