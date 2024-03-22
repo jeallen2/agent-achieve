@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
 
 namespace AgentAchieve.Core.Domain;
 
@@ -22,4 +21,9 @@ public class ApplicationUser : IdentityUser
     /// Gets or sets the sales associated with the user.
     /// </summary>
     public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
+
+    /// <summary>
+    /// Gets or sets the sales goals associated with the user.
+    /// </summary>
+    public virtual ICollection<SalesGoal> SalesGoals { get; set; } = new List<SalesGoal>();
 }

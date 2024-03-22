@@ -1,0 +1,215 @@
+﻿@page "/salesgoals"
+@using AgentAchieve.Infrastructure.Features.Identity
+@using AgentAchieve.Infrastructure.Features.SalesGoals
+@using Microsoft.AspNetCore.Authorization
+@using Telerik.DataSource
+@using Telerik.FontIcons;
+
+@inject ISalesGoalService DataService;
+@inject IIdentityService IdentityService;
+@inject ICurrentUserService CurrentUserService;
+@attribute [Authorize]
+
+<PageTitle>Sales Goals</PageTitle>
+
+<div class="container">
+    <TelerikGrid Data="@Data" Pageable="true"
+                 PageSize="10" Sortable="true"
+                 SortMode="@SortMode.Single"
+                 FilterMode="@GridFilterMode.FilterMenu"
+                 Resizable="true"
+                 SelectionMode="GridSelectionMode.Single"
+                 Reorderable="true"
+                 EditMode="@GridEditMode.Popup"
+                 OnUpdate="@Update"
+                 OnCreate="@Create"
+                 OnAdd="@Add"
+                 OnDelete="@Delete"
+                 ConfirmDelete="true"
+                 OnStateInit="@( (GridStateEventArgs<SalesGoalDto> args) => OnGridStateInit(args) )">
+        <GridSettings>
+            <GridPopupEditSettings MaxWidth="1200px"
+                                   MaxHeight="800px"
+                                   MinWidth="600px"
+                                   Class="custom-popup">
+            </GridPopupEditSettings>
+            <GridPopupEditFormSettings Orientation="@FormOrientation.Horizontal"
+                                       ButtonsLayout="FormButtonsLayout.Center"
+                                       Columns="1">
+            </GridPopupEditFormSettings>
+        </GridSettings>
+        <GridToolBarTemplate>
+            <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
+        </GridToolBarTemplate>
+        <GridColumns>
+            <GridColumn Field="@nameof(SalesGoalDto.Id)" Editable="false" Visible="false" />
+            <GridColumn Field="@nameof(SalesGoalDto.OwnedById)" Width="300px">
+                <Template>
+                    @{
+                        GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
+                    }
+                    @ApplicationUserDtos.FirstOrDefault(x => x.Id == GoalToEdit.OwnedById)?.FullName
+                </Template>
+                <EditorTemplate>
+                    @{
+                        GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
+                        <TelerikDropDownList Data="@ApplicationUserDtos"
+                                             @bind-Value="@GoalToEdit.OwnedById"
+                                             TextField="@nameof(ApplicationUserDto.FullName)"
+                                             ValueField="@nameof(ApplicationUserDto.Id)"
+                                             Filterable=true
+                                             FilterOperator=StringFilterOperator.Contains
+                                             FilterPlaceholder="Search for an Agent..." />
+                    }
+                </EditorTemplate>
+            </GridColumn>
+            <GridColumn Field="@nameof(SalesGoalDto.GoalDate)" Width="200px">
+                <Template>
+                    @((context as SalesGoalDto ?? new SalesGoalDto()).GoalDate?.ToString("MMM yyyy"))
+                </Template>
+                <EditorTemplate>
+                    @{
+                        GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
+                        <TelerikDatePicker @bind-Value="@GoalToEdit.GoalDate"
+                                           Width="100%"
+                                           Id="datepicker"
+                                           BottomView="@CalendarView.Year"
+                                           Format="MMM yyyy">
+
+                        </TelerikDatePicker>
+                    }
+                </EditorTemplate>
+            </GridColumn>
+            <GridColumn Field="@nameof(SalesGoalDto.GoalAmount)" TextAlign="@ColumnTextAlign.Right" Width="250px">
+                <Template>
+                    @((context as SalesGoalDto ?? new SalesGoalDto()).GoalAmount.GetValueOrDefault().ToString("C2"))
+                </Template>
+                <EditorTemplate>
+                    @{
+                        GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
+                        <TelerikNumericTextBox @bind-Value="@GoalToEdit.GoalAmount"
+                                               Format="C2"
+                                               Decimals="2"
+                                               Min="0"
+                                               Max="9999999999999999.99m" />
+                    }
+                </EditorTemplate>
+            </GridColumn>
+            <GridCommandColumn Width="300px">
+                <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+                <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
+                <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+                <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+            </GridCommandColumn>
+        </GridColumns>
+    </TelerikGrid>
+</div>
+
+<TelerikNotification @ref="NotificationComponent"
+                     AnimationDuration="200"
+                     AnimationType="@AnimationType.Fade"
+                     VerticalPosition="@NotificationVerticalPosition.Top"
+                     HorizontalPosition="@NotificationHorizontalPosition.Right"
+                     Class="myNotificationClass" />
+
+@code {
+    public List<SalesGoalDto> Data { get; set; } = new List<SalesGoalDto>();
+    public List<ApplicationUserDto> ApplicationUserDtos { get; set; } = new List<ApplicationUserDto>();
+    private SalesGoalDto GoalToEdit { get; set; } = new SalesGoalDto();
+    private string? CurrentUserId { get; set; }
+    TelerikNotification NotificationComponent { get; set; } = new TelerikNotification();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadData()
+    {
+        CurrentUserId = await CurrentUserService.GetUserIdAsync();
+        Data = (await DataService.GetAllDtoAsync()).ToList();
+        ApplicationUserDtos = (await IdentityService.GetUsers()).ToList();
+    }
+
+    private void OnGridStateInit(GridStateEventArgs<SalesGoalDto> args)
+    {
+        // Sort by goal date
+        args.GridState.SortDescriptors.Add(new SortDescriptor()
+            {
+                Member = nameof(SalesGoalDto.GoalDate),
+                SortDirection = ListSortDirection.Descending
+            });
+    }
+    void Add(GridCommandEventArgs args)
+    {
+        var goal = (SalesGoalDto)args.Item;
+        goal.OwnedById = CurrentUserId;
+    }
+
+    async Task Update(GridCommandEventArgs args)
+    {
+        var goal = (SalesGoalDto)args.Item;
+        var isDuplicate = await IsDuplicateGoal(goal);
+        if (isDuplicate)
+        {
+            args.IsCancelled = true;
+            return;
+        }
+        await DataService.UpdateSalesGoalAsync(goal);
+        await LoadData();
+    }
+
+    async Task Create(GridCommandEventArgs args)
+    {
+        var goal = (SalesGoalDto)args.Item;
+        var isDuplicate = await IsDuplicateGoal(goal);
+        if (isDuplicate)
+        {
+            args.IsCancelled = true;
+            return;
+        }
+        await DataService.CreateSalesGoalAsync(goal);
+        await LoadData();
+    }
+
+    async Task Delete(GridCommandEventArgs args)
+    {
+        var goal = (SalesGoalDto)args.Item;
+        await DataService.DeleteSalesGoalAsync(goal.Id);
+        await LoadData();
+    }
+    /// <summary>
+    /// Checks if the provided sales goal is a duplicate.
+    /// A sales goal is considered a duplicate if another goal exists with the same owner ID and goal date.
+    /// If the goal's owner ID or date is not set, a notification is shown and the method returns false.
+    /// If a duplicate is found, a notification is shown and the method returns true.
+    /// </summary>
+    /// <param name="goal">The sales goal to check for duplicates.</param>
+    /// <returns>True if the goal is a duplicate, false otherwise.</returns>
+    async Task<bool> IsDuplicateGoal(SalesGoalDto goal)
+    {
+        if (goal.OwnedById == null || !goal.GoalDate.HasValue)
+        {
+            NotificationComponent.Show("The goal's owner ID or date is not set.", ThemeConstants.Notification.ThemeColor.Error);
+            return false;
+        }
+
+        var isDuplicate = await DataService.DoesGoalExistAsync(goal.OwnedById, goal.GoalDate.Value);
+        if (isDuplicate)
+        {
+            NotificationComponent.Show("A sales goal for this agent and date already exists.", ThemeConstants.Notification.ThemeColor.Error);
+        }
+        return isDuplicate;
+    }
+}
+
+<style type="text/css">
+    .myNotificationClass {
+        z-index: 20000;
+    }
+
+    .k-notification-container {
+        margin: 6px;
+    }
+</style>

@@ -4,6 +4,7 @@ using AgentAchieve.Infrastructure.Features.Clients;
 using AgentAchieve.Infrastructure.Features.Identity;
 using AgentAchieve.Infrastructure.Features.Properties;
 using AgentAchieve.Infrastructure.Features.Sales;
+using AgentAchieve.Infrastructure.Features.SalesGoals;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -188,6 +189,16 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
     {
         var scope = _scopeFactory.CreateScope();
         return scope.ServiceProvider.GetRequiredService<ISaleService>();
+    }
+
+    /// <summary>
+    /// Creates a sales goal service.
+    /// </summary>
+    /// <returns>The created sale service.</returns>
+    public ISalesGoalService CreateSalesGoalService()
+    {
+        var scope = _scopeFactory.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<Features.SalesGoals.ISalesGoalService>();
     }
 
     /// <summary>

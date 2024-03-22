@@ -33,6 +33,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// </summary>
     public DbSet<Sale> Sales { get; set; }
 
+
+    /// <summary>
+    /// Gets or sets the sales goals in the database.
+    /// </summary>
+    public DbSet<SalesGoal> SalesGoals { get; set; }
+
     /// <summary>
     /// Configures the model that was discovered by convention from the entity types
     /// exposed in <see cref="DbSet{TEntity}"/> properties on your derived context.

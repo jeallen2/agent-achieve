@@ -1,5 +1,4 @@
 ﻿using AgentAchieve.Core.Domain;
-using AgentAchieve.Infrastructure.Features.Properties;
 using AgentAchieve.Infrastructure.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
