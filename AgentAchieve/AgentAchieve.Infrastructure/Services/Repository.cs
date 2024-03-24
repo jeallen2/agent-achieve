@@ -37,12 +37,21 @@ public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEnti
     }
 
     /// <summary>
-    /// Gets all entities.
+    /// Gets all entities from the database.
     /// </summary>
-    /// <returns>An <see cref="IQueryable{TEntity}"/> representing all entities.</returns>
-    public IQueryable<TEntity> GetAll()
+    /// <param name="includes">A function to include related entities in the query, or null to not include any.</param>
+    /// <returns>An <see cref="IQueryable{TEntity}"/> that can be used to enumerate the entities in the database.</returns>
+    /// <remarks>
+    /// This method does not immediately execute the query against the database. The query is executed when the IQueryable object is enumerated.
+    /// </remarks>
+    public IQueryable<TEntity> GetAll(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includes = null)
     {
-        return _dbSet.AsNoTracking();
+        var query = _dbSet.AsNoTracking();
+        if (includes != null)
+        {
+            query = includes(query);
+        }
+        return query;
     }
 
     /// <summary>

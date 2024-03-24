@@ -16,7 +16,7 @@ public class SalesGoalConfiguration : BaseAuditableEntityConfiguration<SalesGoal
                .OnDelete(DeleteBehavior.Restrict);
 
         // Unique Constraint
-        builder.HasIndex(x => new { x.OwnedById, x.GoalDate })
+        builder.HasIndex(x => new { x.OwnedById, x.GoalMonthYear })
                .IsUnique();
     }
 }

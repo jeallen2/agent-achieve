@@ -72,6 +72,13 @@ public class SaleDto : IEntityPk
     public decimal? CommissionRate { get; set; }
 
     /// <summary>
+    /// Gets the commission amount for the sale.
+    /// This is calculated as the product of the sale price and the commission rate.
+    /// </summary>
+    //[Display(Name = "Commission")]
+    //public decimal CommissionAmount => SalePrice.GetValueOrDefault() * CommissionRate.GetValueOrDefault();
+
+    /// <summary>
     /// Represents a mapping configuration for the <see cref="Sale"/> and <see cref="SaleDto"/> classes.
     /// </summary>
     private class Mapping : Profile

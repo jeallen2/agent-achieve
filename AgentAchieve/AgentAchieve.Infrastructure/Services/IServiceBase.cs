@@ -16,10 +16,11 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntityPk
     Task<TEntity?> GetByIdAsync(object id);
 
     /// <summary>
-    /// Retrieves all entities.
+    /// Retrieves all entities. Optionally, includes related entities in the results.
     /// </summary>
+    /// <param name="includes">A function to include related entities in the results. If null, no related entities are included.</param>
     /// <returns>An <see cref="IQueryable{TEntity}"/> representing the collection of entities.</returns>
-    IQueryable<TEntity> GetAll();
+    IQueryable<TEntity> GetAll(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includes = null);
 
     /// <summary>
     /// Inserts an entity asynchronously.
@@ -53,11 +54,12 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntityPk
     Task<TDto?> GetDtoByIdAsync<TDto>(object id) where TDto : class;
 
     /// <summary>
-    /// Retrieves all DTOs (Data Transfer Objects).
+    /// Gets all DTOs.
     /// </summary>
     /// <typeparam name="TDto">The type of DTO.</typeparam>
-    /// <returns>An <see cref="IQueryable{TDto}"/> representing the collection of DTOs.</returns>
-    IQueryable<TDto> GetAllDto<TDto>() where TDto : class;
+    /// <param name="includes">A function to include related entities in the results. If null, no related entities are included.</param>
+    /// <returns>An <see cref="IQueryable{TDto}"/> representing all DTOs.</returns>
+    IQueryable<TDto> GetAllDto<TDto>(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includes = null) where TDto : class;
 
     /// <summary>
     /// Inserts a DTO (Data Transfer Object) asynchronously.

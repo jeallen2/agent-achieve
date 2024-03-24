@@ -1,10 +1,10 @@
 ﻿using AgentAchieve.Core.Domain;
-using AgentAchieve.Infrastructure.Features.Properties; 
+using AgentAchieve.Infrastructure.Features.Properties;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace AgentAchieve.Infrastructure.UnitTests;
+namespace AgentAchieve.Infrastructure.UnitTests.Services;
 public class PropertyServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : TestBase<PropertyService>(outputHelper, dbFixture)
 {
     [Trait("Description", "Verifies that all properties are returned")]
@@ -129,7 +129,7 @@ public class PropertyServiceTests(ITestOutputHelper outputHelper, DatabaseFixtur
         var propertyDto = new PropertyDto
         {
             Id = property.Id,
-            Street = "456 Elm St", 
+            Street = "456 Elm St",
             City = "Othertown",
             YearBuilt = new DateTime(2022),
             Bedrooms = 4

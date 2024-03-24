@@ -11,12 +11,12 @@ public class SalesGoal(string ownedById) : OwnerPropertyEntity(ownedById)
     /// <summary>
     /// Gets or sets the date for which this goal applies (month and year).
     /// </summary>
-    public DateTime GoalDate { get; set; }
+    public DateTime GoalMonthYear { get; set; }
 
     /// <summary>
     /// Gets or sets the target sales amount for the goal.
     /// </summary>
     [Precision(18, 2)]
-    public decimal GoalAmount { get; set; }
+    public decimal SalesGoalAmount { get; set; }
 }
 

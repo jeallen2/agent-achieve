@@ -42,8 +42,12 @@ public interface ISalesGoalService
     /// <summary>
     /// Asynchronously determines whether a sales goal with the specified owner ID and goal date already exists.
     /// </summary>
-    /// <param name="ownedById">The ID of the owner of the sales goal.</param>
-    /// <param name="goalDate">The date of the sales goal.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result is true if a sales goal with the specified owner ID and goal date exists; otherwise, false.</returns>
-    Task<bool> DoesGoalExistAsync(string ownedById, DateTime goalDate);
+    /// <param name="salesGoalDto">The sales goal DTO.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result is true if a sales goal with the specified owner ID and goal date exists; otherwise, false.
+    /// If the GoalDate is not set, the method returns true.
+    /// The GoalDate is normalized to the first day of the month at midnight.
+    /// If the Id property of the salesGoalDto is set (update path), it is excluded from the check.
+    /// </returns>
+    Task<bool> DoesGoalExistAsync(SalesGoalDto salesGoalDto);
 }

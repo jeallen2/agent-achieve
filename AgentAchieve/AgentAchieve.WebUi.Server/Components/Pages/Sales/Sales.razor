@@ -16,142 +16,149 @@
 @attribute [Authorize]
 
 <PageTitle>Sales Transactions</PageTitle>
-<div class="container">
-    <TelerikGrid Data="@Data" Pageable="true"
-                 PageSize="10" Sortable="true"
-                 SortMode="@SortMode.Single"
-                 FilterMode="@GridFilterMode.FilterMenu"
-                 Resizable="true"
-                 SelectionMode="GridSelectionMode.Single"
-                 Reorderable="true"
-                 EditMode="@GridEditMode.Popup"
-                 OnUpdate="@Update"
-                 OnCreate="@Create"
-                 OnAdd="@Add"
-                 OnDelete="@Delete"
-                 ConfirmDelete="true"
-                 OnStateInit="@( (GridStateEventArgs<SaleDto> args) => OnGridStateInit(args) )">
-        <GridSettings>
-            <GridPopupEditSettings MaxWidth="1200px"
-                                   MaxHeight="800px"
-                                   MinWidth="600px"
-                                   Class="custom-popup">
-            </GridPopupEditSettings>
-            <GridPopupEditFormSettings Orientation="@FormOrientation.Horizontal"
-                                       ButtonsLayout="FormButtonsLayout.Center"
-                                       Columns="1">
-            </GridPopupEditFormSettings>
-        </GridSettings>
-        <GridToolBarTemplate>
-            <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
-        </GridToolBarTemplate>
-        <GridColumns>
-            <GridColumn Field="@nameof(SaleDto.Id)" Editable="false" Visible="false" />
-            <GridColumn Field="@nameof(SaleDto.OwnedById)" Width="300px">
-                <Template>
-                    @{
-                        SaleToEdit = context as SaleDto ?? new SaleDto();
-                    }
-                    @ApplicationUserDtos.FirstOrDefault(x => x.Id == SaleToEdit.OwnedById)?.FullName
-                </Template>
-                <EditorTemplate>
-                    @{
-                        SaleToEdit = context as SaleDto ?? new SaleDto();
-                       <TelerikDropDownList Data="@ApplicationUserDtos"
-                                             @bind-Value="@SaleToEdit.OwnedById"
-                                             TextField="@nameof(ApplicationUserDto.FullName)"
-                                             ValueField="@nameof(ApplicationUserDto.Id)"
-                                             Filterable=true
-                                             FilterOperator=StringFilterOperator.Contains
-                                             FilterPlaceholder="Search for an Agent..." />
-                    }
-                </EditorTemplate>
-            </GridColumn>
-            <GridColumn Field="@nameof(SaleDto.ClientId)" Width="300px">
-                <Template>
-                    @{
-                        SaleToEdit = context as SaleDto ?? new SaleDto();
-                    }
-                    @Clients.FirstOrDefault(x => x.Id == SaleToEdit.ClientId)?.FullNameAndPhone
-                </Template>
-                <EditorTemplate>
-                    @{
-                        SaleToEdit = context as SaleDto ?? new SaleDto();
+<TelerikGrid Data="@Data" Pageable="true"
+             PageSize="10" Sortable="true"
+             SortMode="@SortMode.Single"
+             FilterMode="@GridFilterMode.FilterMenu"
+             Resizable="true"
+             SelectionMode="GridSelectionMode.Single"
+             Reorderable="true"
+             EditMode="@GridEditMode.Popup"
+             OnUpdate="@Update"
+             OnCreate="@Create"
+             OnAdd="@Add"
+             OnDelete="@Delete"
+             ConfirmDelete="true"
+             OnStateInit="@( (GridStateEventArgs<SaleDto> args) => OnGridStateInit(args) )">
+    <GridSettings>
+        <GridPopupEditSettings MaxWidth="1200px"
+                               MaxHeight="800px"
+                               MinWidth="600px"
+                               Class="custom-popup">
+        </GridPopupEditSettings>
+        <GridPopupEditFormSettings Orientation="@FormOrientation.Horizontal"
+                                   ButtonsLayout="FormButtonsLayout.Center"
+                                   Columns="1">
+        </GridPopupEditFormSettings>
+    </GridSettings>
+    <GridToolBarTemplate>
+        <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
+    </GridToolBarTemplate>
+    <GridColumns>
+        <GridColumn Field="@nameof(SaleDto.Id)" Editable="false" Visible="false" />
+        <GridColumn Field="@nameof(SaleDto.OwnedById)" Width="300px">
+            <Template>
+                @{
+                    SaleToEdit = context as SaleDto ?? new SaleDto();
+                }
+                @ApplicationUserDtos.FirstOrDefault(x => x.Id == SaleToEdit.OwnedById)?.FullName
+            </Template>
+            <EditorTemplate>
+                @{
+                    SaleToEdit = context as SaleDto ?? new SaleDto();
+                    <TelerikDropDownList Data="@ApplicationUserDtos"
+                                         @bind-Value="@SaleToEdit.OwnedById"
+                                         TextField="@nameof(ApplicationUserDto.FullName)"
+                                         ValueField="@nameof(ApplicationUserDto.Id)"
+                                         Filterable=true
+                                         FilterOperator=StringFilterOperator.Contains
+                                         FilterPlaceholder="Search for an Agent..." />
+                }
+            </EditorTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(SaleDto.ClientId)" Width="300px">
+            <Template>
+                @{
+                    SaleToEdit = context as SaleDto ?? new SaleDto();
+                }
+                @Clients.FirstOrDefault(x => x.Id == SaleToEdit.ClientId)?.FullNameAndPhone
+            </Template>
+            <EditorTemplate>
+                @{
+                    SaleToEdit = context as SaleDto ?? new SaleDto();
 
-                        <TelerikDropDownList Data="@Clients"
-                                             @bind-Value="@SaleToEdit.ClientId"
-                                             TextField="@nameof(ClientDto.FullNameAndPhone)"
-                                             ValueField="@nameof(ClientDto.Id)"
-                                             Filterable=true
-                                             FilterOperator=StringFilterOperator.Contains
-                                             FilterPlaceholder="Search for a Client..." />
-                    }
-                </EditorTemplate>
-            </GridColumn>
-            <GridColumn Field="@nameof(SaleDto.PropertyId)" Width="200px">
-                <Template>
-                    @{
-                        SaleToEdit = context as SaleDto ?? new SaleDto();
-                    }
-                    @Properties.FirstOrDefault(x => x.Id == SaleToEdit.PropertyId)?.FullAddress
-                </Template>
-                <EditorTemplate>
-                    @{
-                        SaleToEdit = context as SaleDto ?? new SaleDto();
+                    <TelerikDropDownList Data="@Clients"
+                                         @bind-Value="@SaleToEdit.ClientId"
+                                         TextField="@nameof(ClientDto.FullNameAndPhone)"
+                                         ValueField="@nameof(ClientDto.Id)"
+                                         Filterable=true
+                                         FilterOperator=StringFilterOperator.Contains
+                                         FilterPlaceholder="Search for a Client..." />
+                }
+            </EditorTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(SaleDto.PropertyId)" Width="200px">
+            <Template>
+                @{
+                    SaleToEdit = context as SaleDto ?? new SaleDto();
+                }
+                @Properties.FirstOrDefault(x => x.Id == SaleToEdit.PropertyId)?.FullAddress
+            </Template>
+            <EditorTemplate>
+                @{
+                    SaleToEdit = context as SaleDto ?? new SaleDto();
 
-                        <TelerikDropDownList Data="@Properties"
-                                             @bind-Value="@SaleToEdit.PropertyId"
-                                             TextField="@nameof(PropertyDto.FullAddress)"
-                                             ValueField="@nameof(PropertyDto.Id)"
-                                             Filterable=true
-                                             FilterOperator=StringFilterOperator.Contains
-                                             FilterPlaceholder="Search for a Property..." />
-                    }
-                </EditorTemplate>
-            </GridColumn>
-            <GridColumn Field="@nameof(SaleDto.SaleType)" Width="150px" />
-            <GridColumn Field="@nameof(SaleDto.ClosingDate)" DisplayFormat="{0:MM/dd/yyyy}" Width="200px" />
-            <GridColumn Field="@nameof(SaleDto.SalePrice)" TextAlign="@ColumnTextAlign.Right" Width="250px">
-                <Template>
-                    @((context as SaleDto ?? new SaleDto()).SalePrice.GetValueOrDefault().ToString("C2"))
-                </Template>
-                <EditorTemplate>
-                    @{
-                        SaleToEdit = context as SaleDto ?? new SaleDto();
-                        <TelerikNumericTextBox @bind-Value="@SaleToEdit.SalePrice"
-                                               Format="C2"
-                                               Decimals="2"
-                                               Min="0"
-                                               Max="9999999999999999.99m" />
-                    }
-                </EditorTemplate>
-            </GridColumn>
-            <GridColumn Field="@nameof(SaleDto.CommissionRate)" TextAlign="@ColumnTextAlign.Right" Width="200px">
-                <Template>
-                    @((context as SaleDto ?? new SaleDto()).CommissionRate.GetValueOrDefault().ToString("P2"))
-                </Template>
-                <EditorTemplate>
-                    @{
-                        SaleToEdit = context as SaleDto ?? new SaleDto();
-                        <TelerikNumericTextBox @bind-Value="@SaleToEdit.CommissionRate"
-                                               Format="P2"
-                                               Decimals="4"
-                                               Min="0"
-                                               Max="100"
-                                               Step="0.001m"
-                                               OnChange="@AdjustCommissionRate" />
-                    }
-                </EditorTemplate>
-            </GridColumn>
-            <GridCommandColumn Width="300px">
-                <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
-                <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
-                <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-                <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
-            </GridCommandColumn>
-        </GridColumns>
-    </TelerikGrid>
-</div>
+                    <TelerikDropDownList Data="@Properties"
+                                         @bind-Value="@SaleToEdit.PropertyId"
+                                         TextField="@nameof(PropertyDto.FullAddress)"
+                                         ValueField="@nameof(PropertyDto.Id)"
+                                         Filterable=true
+                                         FilterOperator=StringFilterOperator.Contains
+                                         FilterPlaceholder="Search for a Property..." />
+                }
+            </EditorTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(SaleDto.SaleType)" Width="150px" />
+        <GridColumn Field="@nameof(SaleDto.ClosingDate)" DisplayFormat="{0:MM/dd/yyyy}" Width="200px" />
+        <GridColumn Field="@nameof(SaleDto.SalePrice)" TextAlign="@ColumnTextAlign.Right" Width="250px">
+            <Template>
+                @((context as SaleDto ?? new SaleDto()).SalePrice.GetValueOrDefault().ToString("C2"))
+            </Template>
+            <EditorTemplate>
+                @{
+                    SaleToEdit = context as SaleDto ?? new SaleDto();
+                    <TelerikNumericTextBox @bind-Value="@SaleToEdit.SalePrice"
+                                           Format="C2"
+                                           Decimals="2"
+                                           Min="0"
+                                           Max="9999999999999999.99m" />
+                }
+            </EditorTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(SaleDto.CommissionRate)" TextAlign="@ColumnTextAlign.Right" Width="200px">
+            <Template>
+                @((context as SaleDto ?? new SaleDto()).CommissionRate.GetValueOrDefault().ToString("P2"))
+            </Template>
+            <EditorTemplate>
+                @{
+                    SaleToEdit = context as SaleDto ?? new SaleDto();
+                    <TelerikNumericTextBox @bind-Value="@SaleToEdit.CommissionRate"
+                                           Format="P2"
+                                           Decimals="4"
+                                           Min="0"
+                                           Max="100"
+                                           Step="0.001m"
+                                           OnChange="@AdjustCommissionRate" />
+                }
+            </EditorTemplate>
+        </GridColumn>
+        @*<GridColumn Field="@nameof(SaleDto.CommissionAmount)"
+                    Title="Commission"
+                    TextAlign="@ColumnTextAlign.Right"
+                    Width="200px"
+                    Editable="false">
+            <Template>
+                @((context as SaleDto ?? new SaleDto()).CommissionAmount.ToString("C2"))
+            </Template>
+        </GridColumn>*@
+        <GridCommandColumn Width="194px">
+            <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+            <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
+            <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+            <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+        </GridCommandColumn>
+    </GridColumns>
+</TelerikGrid>
 
 @code {
     public List<SaleDto> Data { get; set; } = new List<SaleDto>();

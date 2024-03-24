@@ -44,12 +44,13 @@ public abstract class ServiceBase<TEntity> : IServiceBase<TEntity> where TEntity
     }
 
     /// <summary>
-    /// Gets all entities.
+    /// Retrieves all entities. Optionally, includes related entities in the results.
     /// </summary>
-    /// <returns>An <see cref="IQueryable{TEntity}"/> representing all entities.</returns>
-    public virtual IQueryable<TEntity> GetAll()
+    /// <param name="includes">A function to include related entities in the results. If null, no related entities are included.</param>
+    /// <returns>An <see cref="IQueryable{TEntity}"/> representing the collection of entities.</returns>
+    public virtual IQueryable<TEntity> GetAll(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includes = null)
     {
-        return _repository.GetAll();
+        return _repository.GetAll(includes);
     }
 
     /// <summary>
@@ -106,12 +107,12 @@ public abstract class ServiceBase<TEntity> : IServiceBase<TEntity> where TEntity
     /// Gets all DTOs.
     /// </summary>
     /// <typeparam name="TDto">The type of DTO.</typeparam>
+    /// <param name="includes">A function to include related entities in the results. If null, no related entities are included.</param>
     /// <returns>An <see cref="IQueryable{TDto}"/> representing all DTOs.</returns>
-    public IQueryable<TDto> GetAllDto<TDto>() where TDto : class
+    public IQueryable<TDto> GetAllDto<TDto>(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includes = null) where TDto : class
     {
-        return GetAll().ProjectTo<TDto>(_mapper.ConfigurationProvider);
-    }
-
+        return GetAll(includes).ProjectTo<TDto>(_mapper.ConfigurationProvider);
+    }
     /// <summary>
     /// Inserts a new DTO asynchronously.
     /// </summary>

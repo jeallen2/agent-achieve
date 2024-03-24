@@ -16,10 +16,14 @@ public interface IRepository<TEntity> where TEntity : class, IEntityPk
     Task<TEntity?> GetByIdAsync(object id);
 
     /// <summary>
-    /// Retrieves all entities of the specified type.
+    /// Gets all entities from the database.
     /// </summary>
-    /// <returns>An IQueryable representing the collection of entities.</returns>
-    IQueryable<TEntity> GetAll();
+    /// <param name="includes">A function to include related entities in the query, or null to not include any.</param>
+    /// <returns>An <see cref="IQueryable{TEntity}"/> that can be used to enumerate the entities in the database.</returns>
+    /// <remarks>
+    /// This method does not immediately execute the query against the database. The query is executed when the IQueryable object is enumerated.
+    /// </remarks>
+    IQueryable<TEntity> GetAll(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includes = null);
 
     /// <summary>
     /// Inserts a new entity asynchronously.

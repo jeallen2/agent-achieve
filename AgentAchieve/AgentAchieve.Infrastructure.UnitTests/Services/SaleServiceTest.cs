@@ -4,7 +4,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace AgentAchieve.Infrastructure.UnitTests;
+namespace AgentAchieve.Infrastructure.UnitTests.Services;
 public class SaleServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : TestBase<SaleService>(outputHelper, dbFixture)
 {
     [Trait("Description", "Verifies that all sales are returned")]

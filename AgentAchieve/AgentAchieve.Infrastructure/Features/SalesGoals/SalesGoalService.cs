@@ -1,6 +1,7 @@
 using AgentAchieve.Core.Domain;
 using AgentAchieve.Infrastructure.Services;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +19,9 @@ public class SalesGoalService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<Sa
     /// <returns>A task that represents the asynchronous operation. The task result contains the collection of sales goal DTOs.</returns>
     public async Task<IEnumerable<SalesGoalDto>> GetAllDtoAsync()
     {
-        return await GetAllDto<SalesGoalDto>().ToListAsync();
+        return await GetAllDto<SalesGoalDto>(includes => includes
+                                     .Include(sg => sg.OwnedBy)
+                                     .ThenInclude(o => o!.Sales)).ToListAsync();
     }
 
     /// <summary>
@@ -28,7 +31,11 @@ public class SalesGoalService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<Sa
     /// <returns>A task that represents the asynchronous operation. The task result contains the sales goal DTO, or null if not found.</returns>
     public async Task<SalesGoalDto?> GetDtoByIdAsync(int id)
     {
-        return await GetDtoByIdAsync<SalesGoalDto>(id);
+        return await GetAll(includes => includes
+                                     .Include(sg => sg.OwnedBy)
+                                     .ThenInclude(o => o!.Sales))
+            .ProjectTo<SalesGoalDto>(_mapper.ConfigurationProvider)
+                                     .FirstOrDefaultAsync(sg => sg.Id == id);
     }
 
     /// <summary>
@@ -38,10 +45,10 @@ public class SalesGoalService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<Sa
     /// <returns>A task that represents the asynchronous operation. The task result contains the created sales goal DTO.</returns>
     public async Task<SalesGoalDto> CreateSalesGoalAsync(SalesGoalDto salesGoalDto)
     {
-        if (salesGoalDto.GoalDate.HasValue)
+        if (salesGoalDto.GoalMonthYear.HasValue)
         {
-            // Normalize the GoalDate to the first day of the month at midnight
-            salesGoalDto.GoalDate = new DateTime(salesGoalDto.GoalDate.Value.Year, salesGoalDto.GoalDate.Value.Month, 1);
+            // Normalize the GoalMonthYear to the first day of the month at midnight
+            salesGoalDto.GoalMonthYear = new DateTime(salesGoalDto.GoalMonthYear.Value.Year, salesGoalDto.GoalMonthYear.Value.Month, 1);
         }
 
         return await InsertDtoAsync(salesGoalDto);
@@ -54,10 +61,10 @@ public class SalesGoalService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<Sa
     /// <returns>A task that represents the asynchronous operation. The task result contains the updated sales goal DTO.</returns>
     public async Task<SalesGoalDto> UpdateSalesGoalAsync(SalesGoalDto salesGoalDto)
     {
-        if (salesGoalDto.GoalDate.HasValue)
+        if (salesGoalDto.GoalMonthYear.HasValue)
         {
-            // Normalize the GoalDate to the first day of the month at midnight
-            salesGoalDto.GoalDate = new DateTime(salesGoalDto.GoalDate.Value.Year, salesGoalDto.GoalDate.Value.Month, 1);
+            // Normalize the GoalMonthYear to the first day of the month at midnight
+            salesGoalDto.GoalMonthYear = new DateTime(salesGoalDto.GoalMonthYear.Value.Year, salesGoalDto.GoalMonthYear.Value.Month, 1);
         }
 
         return await UpdateDtoAsync(salesGoalDto.Id, salesGoalDto);
@@ -76,15 +83,30 @@ public class SalesGoalService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<Sa
     /// <summary>
     /// Asynchronously determines whether a sales goal with the specified owner ID and goal date already exists.
     /// </summary>
-    /// <param name="ownedById">The ID of the owner of the sales goal.</param>
-    /// <param name="goalDate">The date of the sales goal.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result is true if a sales goal with the specified owner ID and goal date exists; otherwise, false.</returns>
-    public async Task<bool> DoesGoalExistAsync(string ownedById, DateTime goalDate)
+    /// <param name="salesGoalDto">The sales goal DTO.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result is true if a sales goal with the specified owner ID and goal date exists; otherwise, false.
+    /// If the GoalDate is not set, the method returns true.
+    /// The GoalDate is normalized to the first day of the month at midnight.
+    /// If the Id property of the salesGoalDto is set (update path), it is excluded from the check.
+    /// </returns>
+    public async Task<bool> DoesGoalExistAsync(SalesGoalDto salesGoalDto)
     {
-        // Normalize the GoalDate to the first day of the month at midnight
-        goalDate = new DateTime(goalDate.Year, goalDate.Month, 1);
+        // If the GoalDate is not set, return true
+        if (!salesGoalDto.GoalMonthYear.HasValue) return true;
 
-        return await _unitOfWork.GetRepository<SalesGoal>().GetAll()
-            .AnyAsync(g => g.OwnedById == ownedById && g.GoalDate.Date == goalDate.Date);
+        // Normalize the GoalDate to the first day of the month at midnight
+        var goalDate = new DateTime(salesGoalDto.GoalMonthYear.Value.Year, salesGoalDto.GoalMonthYear.Value.Month, 1);
+
+        var query = _unitOfWork.GetRepository<SalesGoal>().GetAll()
+            .Where(g => g.OwnedById == salesGoalDto.OwnedById && g.GoalMonthYear.Date == goalDate.Date);
+
+        // If the Id property of the salesGoalDto is set (update path), exclude it from the check
+        if (salesGoalDto.Id != 0)
+        {
+            query = query.Where(g => g.Id != salesGoalDto.Id);
+        }
+
+        return await query.AnyAsync();
     }
 }

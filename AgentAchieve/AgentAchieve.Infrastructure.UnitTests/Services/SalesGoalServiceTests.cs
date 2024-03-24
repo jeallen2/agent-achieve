@@ -4,7 +4,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace AgentAchieve.Infrastructure.UnitTests;
+namespace AgentAchieve.Infrastructure.UnitTests.Services;
 public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : TestBase<SalesGoalService>(outputHelper, dbFixture)
 {
     [Trait("Description", "Verifies that all sales goals are returned")]
@@ -15,9 +15,13 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
 
         // Arrange
         Logger.LogInformation("Creating SalesGoalService and adding sales goals");
+        var applicationUser = new ApplicationUser { Id = "Agent1" };
+        var applicationUser2 = new ApplicationUser { Id = "Agent2" };
+        await AddAsync(applicationUser);
+        await AddAsync(applicationUser2);
         var salesGoalService = CreateSalesGoalService();
-        var salesGoal1 = new SalesGoal("owner1") { GoalDate = new DateTime(2022, 1, 1), GoalAmount = 100000 };
-        var salesGoal2 = new SalesGoal("owner2") { GoalDate = new DateTime(2022, 2, 1), GoalAmount = 200000 };
+        var salesGoal1 = new SalesGoal("Agent1") { GoalMonthYear = new DateTime(2022, 1, 1), SalesGoalAmount = 100000 };
+        var salesGoal2 = new SalesGoal("Agent2") { GoalMonthYear = new DateTime(2022, 2, 1), SalesGoalAmount = 200000 };
 
         await AddAsync(salesGoal1);
         await AddAsync(salesGoal2);
@@ -40,8 +44,11 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
 
         // Arrange
         Logger.LogInformation("Creating SalesGoalService and adding a sales goal");
+        var applicationUser = new ApplicationUser { Id = "Agent1" };
+        await AddAsync(applicationUser);
+
         var salesGoalService = CreateSalesGoalService();
-        var salesGoal = new SalesGoal("owner1") { GoalDate = new DateTime(2022, 1, 1), GoalAmount = 100000 };
+        var salesGoal = new SalesGoal("Agent1") { GoalMonthYear = new DateTime(2022, 1, 1), SalesGoalAmount = 100000 };
         await AddAsync(salesGoal);
 
         // Act
@@ -53,8 +60,8 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
         result.Should().NotBeNull();
         result!.Id.Should().Be(salesGoal.Id);
         result.OwnedById.Should().Be(salesGoal.OwnedById);
-        result.GoalDate.Should().Be(salesGoal.GoalDate);
-        result.GoalAmount.Should().Be(salesGoal.GoalAmount);
+        result.GoalMonthYear.Should().Be(salesGoal.GoalMonthYear);
+        result.SalesGoalAmount.Should().Be(salesGoal.SalesGoalAmount);
         Logger.LogInformation("Correct sales goal returned successfully");
     }
 
@@ -66,12 +73,15 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
 
         // Arrange
         Logger.LogInformation("Creating SalesGoalService and a sales goal DTO");
+        var applicationUser = new ApplicationUser { Id = "Agent1" };
+        await AddAsync(applicationUser);
+
         var salesGoalService = CreateSalesGoalService();
         var salesGoalDto = new SalesGoalDto
         {
             OwnedById = "Agent1",
-            GoalDate = new DateTime(2022, 1, 1),
-            GoalAmount = 100000
+            GoalMonthYear = new DateTime(2022, 1, 1),
+            SalesGoalAmount = 100000
         };
 
         // Act
@@ -84,8 +94,8 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
         var dbSalesGoal = await FindAsync<SalesGoal>(result.Id);
         dbSalesGoal.Should().NotBeNull();
         dbSalesGoal!.OwnedById.Should().Be(salesGoalDto.OwnedById);
-        dbSalesGoal.GoalDate.Should().Be(salesGoalDto.GoalDate.Value);
-        dbSalesGoal.GoalAmount.Should().Be(salesGoalDto.GoalAmount);
+        dbSalesGoal.GoalMonthYear.Should().Be(salesGoalDto.GoalMonthYear.Value);
+        dbSalesGoal.SalesGoalAmount.Should().Be(salesGoalDto.SalesGoalAmount);
 
         Logger.LogInformation("Sales goal added successfully");
     }
@@ -98,15 +108,20 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
 
         // Arrange
         Logger.LogInformation("Creating SalesGoalService and a sales goal DTO");
+        var applicationUser = new ApplicationUser { Id = "Agent1" };
+        var applicationUser2 = new ApplicationUser { Id = "Agent2" };
+        await AddAsync(applicationUser);
+        await AddAsync(applicationUser2);
+
         var salesGoalService = CreateSalesGoalService();
-        var salesGoal = new SalesGoal("Agent1") { GoalDate = new DateTime(2022, 1, 1), GoalAmount = 100000 };
+        var salesGoal = new SalesGoal("Agent1") { GoalMonthYear = new DateTime(2022, 1, 1), SalesGoalAmount = 100000 };
         await AddAsync(salesGoal);
         var salesGoalDto = new SalesGoalDto
         {
             Id = salesGoal.Id,
             OwnedById = "Agent2",
-            GoalDate = new DateTime(2022, 2, 1),
-            GoalAmount = 200000
+            GoalMonthYear = new DateTime(2022, 2, 1),
+            SalesGoalAmount = 200000
         };
 
         // Act
@@ -119,8 +134,8 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
         var dbSalesGoal = await FindAsync<SalesGoal>(result.Id);
         dbSalesGoal.Should().NotBeNull();
         dbSalesGoal!.OwnedById.Should().Be(salesGoalDto.OwnedById);
-        dbSalesGoal.GoalDate.Should().Be(salesGoalDto.GoalDate.Value);
-        dbSalesGoal.GoalAmount.Should().Be(salesGoalDto.GoalAmount);
+        dbSalesGoal.GoalMonthYear.Should().Be(salesGoalDto.GoalMonthYear.Value);
+        dbSalesGoal.SalesGoalAmount.Should().Be(salesGoalDto.SalesGoalAmount);
 
         Logger.LogInformation("Sales goal updated successfully");
     }
@@ -133,8 +148,11 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
 
         // Arrange
         Logger.LogInformation("Creating SalesGoalService and a sales goal");
+        var applicationUser = new ApplicationUser { Id = "Agent1" };
+        await AddAsync(applicationUser);
+
         var salesGoalService = CreateSalesGoalService();
-        var salesGoal = new SalesGoal("Agent1") { GoalDate = new DateTime(2022, 1, 1), GoalAmount = 100000 };
+        var salesGoal = new SalesGoal("Agent1") { GoalMonthYear = new DateTime(2022, 1, 1), SalesGoalAmount = 100000 };
         await AddAsync(salesGoal);
 
         // Act
@@ -151,26 +169,39 @@ public class SalesGoalServiceTests(ITestOutputHelper outputHelper, DatabaseFixtu
 
     [Trait("Description", "Verifies that the existence of a sales goal is correctly determined")]
     [Theory]
-    [InlineData("owner1", "2022/1/1", true)]
-    [InlineData("owner1", "2022/2/1", false)]
-    [InlineData("nonExistingOwner", "2022/2/1", false)]
-    public async Task DoesGoalExistAsync_ShouldCorrectlyDetermineExistenceOfSalesGoal(string ownerId, DateTime goalDate, bool expectedExistence)
+    [InlineData("owner1", "2022/1/1", 0, true)]
+    [InlineData("owner1", "2022/2/1", 0, false)]
+    [InlineData("nonExistingOwner", "2022/2/1", 0, false)]
+    [InlineData("owner1", "2022/1/1", 1, false)] // Test case where an update doesn't block against itself
+    public async Task DoesGoalExistAsync_ShouldCorrectlyDetermineExistenceOfSalesGoal(string ownerId, DateTime goalMonthYear, int id, bool expectedExistence)
     {
         LogDescription();
 
         // Arrange
         Logger.LogInformation("Creating SalesGoalService and adding a sales goal");
+        var applicationUser = new ApplicationUser { Id = "owner1" };
+        await AddAsync(applicationUser);
+
         var salesGoalService = CreateSalesGoalService();
-        var salesGoal = new SalesGoal("owner1") { GoalDate = new DateTime(2022, 1, 1), GoalAmount = 100000 };
+        var salesGoal = new SalesGoal("owner1") { GoalMonthYear = new DateTime(2022, 1, 1), SalesGoalAmount = 100000 };
         await AddAsync(salesGoal);
+
+        var salesGoalDto = new SalesGoalDto
+        {
+            Id = id,
+            OwnedById = ownerId,
+            GoalMonthYear = goalMonthYear,
+            SalesGoalAmount = 100000
+        };
 
         // Act
         Logger.LogInformation("Calling DoesGoalExistAsync");
-        var result = await salesGoalService.DoesGoalExistAsync(ownerId, goalDate);
+        var result = await salesGoalService.DoesGoalExistAsync(salesGoalDto);
 
         // Assert
         Logger.LogInformation("Asserting that the existence of the sales goal is correctly determined");
         result.Should().Be(expectedExistence);
         Logger.LogInformation("Existence of sales goal correctly determined");
     }
+
 }

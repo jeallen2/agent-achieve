@@ -11,7 +11,7 @@ using System.Security.Claims;
 using Xunit.Abstractions;
 
 
-namespace AgentAchieve.Infrastructure.UnitTests;
+namespace AgentAchieve.Infrastructure.UnitTests.Services;
 
 /// <summary>
 /// Represents the unit tests for the <see cref="IdentityService"/> class.

@@ -20,7 +20,7 @@ namespace AgentAchieve.Infrastructure.UnitTests;
 /// Base class for unit tests.
 /// </summary>
 /// <typeparam name="TClass">The type of the class being tested.</typeparam>
-public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
+public class TestBase<TClass> : LoggingTestBase<TClass>, IClassFixture<DatabaseFixture>, IDisposable
 {
     /// <summary>
     /// AutoMocker for setting up mocks.
@@ -62,7 +62,7 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
     /// </summary>
     /// <param name="outputHelper">Helper for writing to the test output.</param>
     /// <param name="dbFixture">Fixture for setting up the database.</param>
-    public TestBase(ITestOutputHelper outputHelper, DatabaseFixture dbFixture)
+    public TestBase(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : base(outputHelper)
     {
         DbFixture = dbFixture;
 
@@ -137,28 +137,12 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <param name="entity">The entity to add.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    protected async Task AddAsync<TEntity>(TEntity entity) where TEntity : class, IEntityPk
+    protected async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
     {
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         context.Add(entity);
         await context.SaveChangesAsync();
-    }
-
-    /// <summary>
-    /// Logs the description of the test.
-    /// </summary>
-    /// <param name="callerName">The name of the calling method.</param>
-    protected void LogDescription([CallerMemberName] string callerName = "")
-    {
-        var callingMethod = GetType().GetMethod(callerName);
-        var traits = TraitHelper.GetTraits(callingMethod);
-        var descriptionTrait = traits.FirstOrDefault(t => t.Key == "Description"); // Find the 'Description' trait
-
-        if (descriptionTrait.Value != null) // Check if the trait's Value is null
-        {
-            Logger.LogInformation("Test Description: {Description}", descriptionTrait.Value);
-        }
     }
 
     /// <summary>
@@ -198,7 +182,7 @@ public class TestBase<TClass> : IClassFixture<DatabaseFixture>, IDisposable
     public ISalesGoalService CreateSalesGoalService()
     {
         var scope = _scopeFactory.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<Features.SalesGoals.ISalesGoalService>();
+        return scope.ServiceProvider.GetRequiredService<ISalesGoalService>();
     }
 
     /// <summary>

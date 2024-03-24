@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using AgentAchieve.Core.Domain;
 using Microsoft.EntityFrameworkCore;
+using AgentAchieve.Infrastructure.Features.Sales;
 
 namespace AgentAchieve.Infrastructure.Features.SalesGoals;
 
@@ -31,16 +32,104 @@ public class SalesGoalDto : IEntityPk
     /// </summary>
     [Required]
     [Display(Name = "Goal Month/Year")]
-    public DateTime? GoalDate { get; set; }
+    public DateTime? GoalMonthYear { get; set; }
 
     /// <summary>
     /// Gets or sets the target goal amount for the goal.
     /// </summary>
     [Required]
-    [Display(Name = "Goal Amount")]
+    [Display(Name = "Sales Goal")]
     [Precision(18, 2)]
     [Range(typeof(decimal), "1", "9999999999999999.99", ErrorMessage = "Goal Amount must be between 1 and 9999999999999999.99")]
-    public decimal? GoalAmount { get; set; }
+    public decimal? SalesGoalAmount { get; set; }
+
+    /// <summary>
+    /// Gets the total sales achieved for the goal date.
+    /// </summary>
+    /// <value>
+    /// The total sales achieved for the goal date. If the goal date is not set, this property returns 0.
+    /// </value>
+    [Display(Name = "Total Sales")]
+    [Precision(18, 2)]
+    public decimal TotalSales
+    {
+        get
+        {
+            if (GoalMonthYear.HasValue)
+            {
+                return Sales.Where(s => s.ClosingDate.Year == GoalMonthYear.Value.Year && s.ClosingDate.Month == GoalMonthYear.Value.Month)
+                            .Sum(s => s.SalePrice ?? 0);
+            }
+            return 0;
+        }
+    }
+
+
+    /// <summary>
+    /// Gets the variance between the sales goal and the total sales.
+    /// </summary>
+    /// <value>
+    /// The variance between the sales goal and the total sales. If the sales goal is not set, this property returns 0.
+    /// </value>
+    [Display(Name = "Over/Under Sales Goal")]
+    [Precision(18, 2)]
+    public decimal SalesGoalVariance
+    {
+        get
+        {
+            if (SalesGoalAmount.HasValue)
+            {
+                return TotalSales - SalesGoalAmount.Value;
+            }
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// Gets the percentage of the goal achieved.
+    /// </summary>
+    /// <value>
+    /// The percentage of the goal achieved. If the goal amount is not set or is 0, this property returns 0.
+    /// </value>
+    [Display(Name = "% to Sales Goal")]
+    public decimal PercentToSalesGoal
+    {
+        get
+        {
+            if (SalesGoalAmount.HasValue && SalesGoalAmount.Value != 0)
+            {
+                return (TotalSales / SalesGoalAmount.Value) * 100;
+            }
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// Gets the commission achieved for the goal date.
+    /// </summary>
+    /// <value>
+    /// The commission achieved for the goal date. If the goal date is not set, this property returns 0.
+    /// </value>
+    //[Display(Name = "Commission Achieved")]
+    //[Precision(18, 2)]
+    //public decimal CommissionAchieved
+    //{
+    //    get
+    //    {
+    //        if (GoalDate.HasValue)
+    //        {
+    //            return Sales.Where(s => s.ClosingDate.Year == GoalDate.Value.Year && s.ClosingDate.Month == GoalDate.Value.Month)
+    //                        .Sum(s => s.CommissionAmount);
+    //        }
+
+    //        return 0;
+    //    }
+    //}
+
+    /// <summary>
+    /// Gets or sets the list of sales associated with the sales goal.
+    /// </summary>
+    public IEnumerable<SaleDto> Sales { get; set; } = new List<SaleDto>();
 
     /// <summary>
     /// Represents a mapping configuration for the <see cref="SalesGoal"/> and <see cref="SalesGoalDto"/> classes.
@@ -49,7 +138,10 @@ public class SalesGoalDto : IEntityPk
     {
         public Mapping()
         {
-            CreateMap<SalesGoal, SalesGoalDto>().ReverseMap();
+            CreateMap<SalesGoal, SalesGoalDto>()
+                .ForMember(dest => dest.Sales, opt => opt.MapFrom(src => src.OwnedBy!.Sales))
+                .ReverseMap()
+                .ForMember(x => x.OwnedBy, opt => opt.Ignore());
         }
     }
 }

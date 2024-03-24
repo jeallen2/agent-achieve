@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 /// <summary>
 /// This class contains unit tests for the ClientService class.
 /// </summary>
-namespace AgentAchieve.Infrastructure.UnitTests;
+namespace AgentAchieve.Infrastructure.UnitTests.Services;
 public class ClientServiceTests(ITestOutputHelper outputHelper, DatabaseFixture dbFixture) : TestBase<ClientService>(outputHelper, dbFixture)
 {
     [Trait("Description", "Verifies that all clients are returned")]
