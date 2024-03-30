@@ -1,5 +1,6 @@
 using AgentAchieve.Infrastructure.Features.Identity;
 using Microsoft.AspNetCore.Http;
+using AgentAchieve.UnitTests.Common;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Security.Claims;

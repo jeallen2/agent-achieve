@@ -3,6 +3,7 @@ using AgentAchieve.Infrastructure.Features.Identity;
 using AutoMapper;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
+using AgentAchieve.UnitTests.Common;
 using Microsoft.Extensions.Logging;
 using MockQueryable.Moq;
 using Moq;

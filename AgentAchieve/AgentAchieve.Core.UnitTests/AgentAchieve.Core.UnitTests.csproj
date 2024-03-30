@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AgentAchieve.Core\AgentAchieve.Core.csproj" />
+    <ProjectReference Include="..\AgentAchieve.UnitTests.Common\AgentAchieve.UnitTests.Common.csproj" />
   </ItemGroup>
 
 </Project>

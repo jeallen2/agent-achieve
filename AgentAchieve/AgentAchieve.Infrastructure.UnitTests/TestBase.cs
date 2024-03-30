@@ -7,12 +7,10 @@ using AgentAchieve.Infrastructure.Features.Sales;
 using AgentAchieve.Infrastructure.Features.SalesGoals;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using AgentAchieve.UnitTests.Common;
 using Moq;
 using Moq.AutoMock;
-using System.Runtime.CompilerServices;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace AgentAchieve.Infrastructure.UnitTests;
 
@@ -26,11 +24,6 @@ public class TestBase<TClass> : LoggingTestBase<TClass>, IClassFixture<DatabaseF
     /// AutoMocker for setting up mocks.
     /// </summary>
     protected readonly AutoMocker AutoMocker;
-
-    /// <summary>
-    /// Logger for logging messages.
-    /// </summary>
-    protected readonly ILogger<TClass> Logger;
 
     /// <summary>
     /// Factory for creating service scopes.

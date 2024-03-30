@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace AgentAchieve.Infrastructure.UnitTests;
+namespace AgentAchieve.UnitTests.Common;
 
 /// <summary>
 /// Base class for logging in unit tests.
@@ -14,7 +14,7 @@ public abstract class LoggingTestBase<TClass>
     /// <summary>
     /// Logger instance.
     /// </summary>
-    protected readonly ILogger<TClass> Logger;
+    protected ILogger<TClass> Logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoggingTestBase{TClass}"/> class.

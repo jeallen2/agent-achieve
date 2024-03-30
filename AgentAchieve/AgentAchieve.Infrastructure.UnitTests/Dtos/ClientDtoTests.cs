@@ -1,5 +1,6 @@
 ﻿using AgentAchieve.Infrastructure.Features.Clients;
 using AgentAchieve.Infrastructure.Features.Sales;
+using AgentAchieve.UnitTests.Common;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 

@@ -1,6 +1,7 @@
 ﻿using AgentAchieve.Core.Domain;
 using AgentAchieve.Infrastructure.Features.Clients;
 using FluentAssertions;
+using AgentAchieve.UnitTests.Common;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 

@@ -40,7 +40,10 @@ steps:
   displayName: 'Run Unit Tests'
   inputs:
     command: 'test'
-    projects: '**/*Test*.csproj'
+    projects: |
+      **/AgentAchieve.Core.UnitTests.csproj
+      **/AgentAchieve.WebUi.Server.UnitTests.csproj
+      **/AgentAchieve.Infrastructure.UnitTests.csproj
     arguments: '--configuration $(buildConfiguration) --collect "XPlat Code Coverage" --settings $(Build.SourcesDirectory)/AgentAchieve/codecoverage.runsettings'
     publishTestResults: true
   

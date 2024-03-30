@@ -27,11 +27,15 @@ public class SalesGoalDto : IEntityPk
     [Display(Name = "Agent")]
     public string? OwnedById { get; set; }
 
+    [Display(Name = "Agent")]
+    public string? OwnerFullName { get; set; }
+
     /// <summary>
     /// Gets or sets the date for which this goal applies (month and year).
     /// </summary>
     [Required]
     [Display(Name = "Goal Month/Year")]
+    [DisplayFormat(DataFormatString = "{0:MMM yyyy}")]
     public DateTime? GoalMonthYear { get; set; }
 
     /// <summary>
@@ -39,6 +43,7 @@ public class SalesGoalDto : IEntityPk
     /// </summary>
     [Required]
     [Display(Name = "Sales Goal")]
+    [DisplayFormat(DataFormatString = "{0:C2}")]
     [Precision(18, 2)]
     [Range(typeof(decimal), "1", "9999999999999999.99", ErrorMessage = "Goal Amount must be between 1 and 9999999999999999.99")]
     public decimal? SalesGoalAmount { get; set; }
@@ -50,6 +55,7 @@ public class SalesGoalDto : IEntityPk
     /// The total sales achieved for the goal date. If the goal date is not set, this property returns 0.
     /// </value>
     [Display(Name = "Total Sales")]
+    [DisplayFormat(DataFormatString = "{0:C2}")]
     [Precision(18, 2)]
     public decimal TotalSales
     {
@@ -72,6 +78,7 @@ public class SalesGoalDto : IEntityPk
     /// The variance between the sales goal and the total sales. If the sales goal is not set, this property returns 0.
     /// </value>
     [Display(Name = "Over/Under Sales Goal")]
+    [DisplayFormat(DataFormatString = "{0:C2}")]
     [Precision(18, 2)]
     public decimal SalesGoalVariance
     {
@@ -140,7 +147,8 @@ public class SalesGoalDto : IEntityPk
         {
             CreateMap<SalesGoal, SalesGoalDto>()
                 .ForMember(dest => dest.Sales, opt => opt.MapFrom(src => src.OwnedBy!.Sales))
-                .ReverseMap()
+                .ForMember(dest => dest.OwnerFullName, opt => opt.MapFrom(src => src.OwnedBy!.FullName))
+        .ReverseMap()
                 .ForMember(x => x.OwnedBy, opt => opt.Ignore());
         }
     }

@@ -48,6 +48,7 @@ public class ApplicationUserDto
             return parts.Count != 0 ? string.Join(", ", parts) : UserName;
         }
     }
+
     private class Mapping : Profile
     {
         public Mapping()

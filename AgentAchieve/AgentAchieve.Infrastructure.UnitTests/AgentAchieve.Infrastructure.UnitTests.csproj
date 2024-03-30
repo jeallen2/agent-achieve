@@ -50,6 +50,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AgentAchieve.Infrastructure\AgentAchieve.Infrastructure.csproj" />
+    <ProjectReference Include="..\AgentAchieve.UnitTests.Common\AgentAchieve.UnitTests.Common.csproj" />
   </ItemGroup>
 
 </Project>
