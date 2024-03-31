@@ -1,5 +1,6 @@
 trigger:
-- '*'
+- dev
+- main
 
 pool:
   vmImage: 'windows-latest'
@@ -35,6 +36,35 @@ steps:
     projects: '$(solutionPath)'
     arguments: '--configuration $(buildConfiguration)'
 
+- task: DotNetCoreCLI@2
+  displayName: 'Install EF Core tools'
+  inputs:
+    command: 'custom'
+    custom: 'tool'
+    arguments: 'install --global dotnet-ef'
+
+- powershell: |
+    $maxRetries = 3 
+    $sleepIntervalSeconds = 15 
+    
+    $retryCount = 0
+    do {
+        try {
+            Write-Host "Applying EF Core migrations - attempt $retryCount"
+            dotnet ef database update --project AgentAchieve/AgentAchieve.Infrastructure --startup-project AgentAchieve/AgentAchieve.WebUi.Server --connection "$(AzureSQLConnectionString)" 
+            Write-Host "Migrations applied successfully."
+            break
+        } catch {
+            Write-Error "Migration failed: $_" 
+            if ($retryCount -ge $maxRetries) {
+                throw
+            } else {
+                Start-Sleep -Seconds $sleepIntervalSeconds
+                $retryCount++
+            }
+        }
+    } while ($true)
+  displayName: 'Apply EF Core migrations'
 
 - task: DotNetCoreCLI@2
   displayName: 'Run Unit Tests'
@@ -60,27 +90,18 @@ steps:
     summaryFileLocation: '$(Build.ArtifactStagingDirectory)/merged_coverage/Cobertura.xml'
     reportDirectory: '$(Build.ArtifactStagingDirectory)/merged_coverage'
 
+- task: DotNetCoreCLI@2
+  displayName: 'Publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
+    zipAfterPublish: true
 
-
-# - task: DotNetCoreCLI@2
-#   displayName: 'Publish'
-#   inputs:
-#     command: 'publish'
-#     publishWebProjects: true
-#     arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
-#     zipAfterPublish: true
-
-# - task: DownloadSecureFile@1
-#   name: publishProfile
-#   inputs:
-#     secureFile: 'AgentAchieveDevZip.PublishSettings' 
-
-# - task: AzureRmWebAppDeployment@4
-#   inputs:
-#     ConnectionType: 'PublishProfile'
-#     PublishProfilePath: '$(publishProfile.secureFilePath)'
-#     PublishProfilePassword: '$(azurepublishpassword)'
-#     Package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
-#     appType: 'webApp'
-#     DeploymentType: zipDeploy
-  
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'agent-achieve-managed-identity'
+    appType: 'webApp'
+    appName: 'AgentAchieveDev'
+    package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    deploymentMethod: 'auto'
