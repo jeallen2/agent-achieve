@@ -30,8 +30,12 @@
                                    Columns="2">
         </GridPopupEditFormSettings>
     </GridSettings>
+    <GridExport>
+        <GridExcelExport FileName="clients" AllPages="true" />
+    </GridExport>
     <GridToolBarTemplate>
         <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
+        <GridCommandButton Command="ExcelExport" Icon="@SvgIcon.FileExcel">Export to Excel</GridCommandButton>
     </GridToolBarTemplate>    <GridColumns>
         <GridColumn Field="@nameof(ClientDto.Id)" Editable="false" Visible="false" />
         <GridColumn Field="@nameof(ClientDto.FirstName)" Width="200px" />

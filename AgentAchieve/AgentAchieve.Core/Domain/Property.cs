@@ -111,4 +111,6 @@ public class Property(string street, string city, string state, string zipCode) 
     /// Gets or sets the description of the property.
     /// </summary>
     public string? Description { get; set; }
+
+    public string FullAddress => $"{Street} {City}, {State} {ZipCode}";
 }

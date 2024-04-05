@@ -15,10 +15,26 @@ public class SaleServiceTests(ITestOutputHelper outputHelper, DatabaseFixture db
         LogDescription();
 
         // Arrange
-        Logger.LogInformation("Creating SaleService and adding sales");
+        Logger.LogInformation("Creating SaleService and adding properties, clients, and sales");
         var saleService = CreateSaleService();
-        var sale1 = new Sale("owner1") { PropertyId = 1, ClientId = 1, SaleType = SaleType.Buyer, ClosingDate = DateTime.Now, SalePrice = 100000, CommissionRate = 0.05m };
-        var sale2 = new Sale("owner2") { PropertyId = 2, ClientId = 2, SaleType = SaleType.Seller, ClosingDate = DateTime.Now, SalePrice = 200000, CommissionRate = 0.05m };
+
+        var applicationUser = new ApplicationUser { Id = "Agent1" };
+        var applicationUser2 = new ApplicationUser { Id = "Agent2" };
+        await AddAsync(applicationUser);
+        await AddAsync(applicationUser2);
+
+        var property1 = new Property("123 Main St", "City1", "ST", "12345");
+        var property2 = new Property("456 Oak St", "City2", "ST", "67890");
+        await AddAsync(property1);
+        await AddAsync(property2);
+
+        var client1 = new Client("John", "Doe", "555-555-5555");
+        var client2 = new Client("Jane", "Smith", "555-555-5556");
+        await AddAsync(client1);
+        await AddAsync(client2);
+
+        var sale1 = new Sale(applicationUser.Id) { PropertyId = property1.Id, ClientId = client1.Id, SaleType = SaleType.Buyer, ClosingDate = DateTime.Now, SalePrice = 100000, CommissionRate = 0.05m };
+        var sale2 = new Sale(applicationUser2.Id) { PropertyId = property2.Id, ClientId = client2.Id, SaleType = SaleType.Seller, ClosingDate = DateTime.Now, SalePrice = 200000, CommissionRate = 0.05m };
 
         await AddAsync(sale1);
         await AddAsync(sale2);
@@ -42,7 +58,17 @@ public class SaleServiceTests(ITestOutputHelper outputHelper, DatabaseFixture db
         // Arrange
         Logger.LogInformation("Creating SaleService and adding a sale");
         var saleService = CreateSaleService();
-        var sale = new Sale("owner1") { PropertyId = 1, ClientId = 1, SaleType = SaleType.Buyer, ClosingDate = DateTime.Now, SalePrice = 100000, CommissionRate = 0.05m };
+
+        var applicationUser = new ApplicationUser { Id = "Agent1" };
+        await AddAsync(applicationUser);
+
+        var property1 = new Property("123 Main St", "City1", "ST", "12345");
+        await AddAsync(property1);
+
+        var client1 = new Client("John", "Doe", "555-555-5555");
+        await AddAsync(client1);
+
+        var sale = new Sale(applicationUser.Id) { PropertyId = property1.Id, ClientId = client1.Id, SaleType = SaleType.Buyer, ClosingDate = DateTime.Now, SalePrice = 100000, CommissionRate = 0.05m };
         await AddAsync(sale);
 
         // Act

@@ -1,6 +1,8 @@
 ﻿using AgentAchieve.Core.Domain;
+using AgentAchieve.Infrastructure.Features.SalesGoals;
 using AgentAchieve.Infrastructure.Services;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +26,8 @@ namespace AgentAchieve.Infrastructure.Features.Sales
         /// <returns>A task that represents the asynchronous operation. The task result contains the collection of sale DTOs.</returns>
         public async Task<IEnumerable<SaleDto>> GetAllDtoAsync()
         {
-            return await GetAllDto<SaleDto>().ToListAsync();
+            return await GetAllDto<SaleDto>(includes => includes
+                             .Include(sg => sg.OwnedBy)).ToListAsync();
         }
 
         /// <summary>
@@ -34,7 +37,10 @@ namespace AgentAchieve.Infrastructure.Features.Sales
         /// <returns>A task that represents the asynchronous operation. The task result contains the sale DTO, or null if not found.</returns>
         public async Task<SaleDto?> GetDtoByIdAsync(int id)
         {
-            return await GetDtoByIdAsync<SaleDto>(id);
+            return await GetAll(includes => includes
+                                    .Include(sg => sg.OwnedBy))
+           .ProjectTo<SaleDto>(_mapper.ConfigurationProvider)
+                                    .FirstOrDefaultAsync(sg => sg.Id == id);
         }
 
         /// <summary>

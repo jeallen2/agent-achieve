@@ -41,18 +41,16 @@
                                    Columns="1">
         </GridPopupEditFormSettings>
     </GridSettings>
+    <GridExport>
+        <GridExcelExport FileName="sales" AllPages="true" />
+    </GridExport>
     <GridToolBarTemplate>
         <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
+        <GridCommandButton Command="ExcelExport" Icon="@SvgIcon.FileExcel">Export to Excel</GridCommandButton>
     </GridToolBarTemplate>
     <GridColumns>
         <GridColumn Field="@nameof(SaleDto.Id)" Editable="false" Visible="false" />
-        <GridColumn Field="@nameof(SaleDto.OwnedById)" Width="300px">
-            <Template>
-                @{
-                    SaleToEdit = context as SaleDto ?? new SaleDto();
-                }
-                @ApplicationUserDtos.FirstOrDefault(x => x.Id == SaleToEdit.OwnedById)?.FullName
-            </Template>
+        <GridColumn Field="@nameof(SaleDto.OwnerFullName)" Width="300px" >
             <EditorTemplate>
                 @{
                     SaleToEdit = context as SaleDto ?? new SaleDto();
@@ -66,13 +64,7 @@
                 }
             </EditorTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(SaleDto.ClientId)" Width="300px">
-            <Template>
-                @{
-                    SaleToEdit = context as SaleDto ?? new SaleDto();
-                }
-                @Clients.FirstOrDefault(x => x.Id == SaleToEdit.ClientId)?.FullNameAndPhone
-            </Template>
+        <GridColumn Field="@nameof(SaleDto.ClientFullNameAndPhone)" Width="300px">
             <EditorTemplate>
                 @{
                     SaleToEdit = context as SaleDto ?? new SaleDto();
@@ -87,13 +79,7 @@
                 }
             </EditorTemplate>
         </GridColumn>
-        <GridColumn Field="@nameof(SaleDto.PropertyId)" Width="200px">
-            <Template>
-                @{
-                    SaleToEdit = context as SaleDto ?? new SaleDto();
-                }
-                @Properties.FirstOrDefault(x => x.Id == SaleToEdit.PropertyId)?.FullAddress
-            </Template>
+        <GridColumn Field="@nameof(SaleDto.PropertyFullAddress)" Width="200px">
             <EditorTemplate>
                 @{
                     SaleToEdit = context as SaleDto ?? new SaleDto();

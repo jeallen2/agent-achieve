@@ -5,6 +5,7 @@ using System.ComponentModel;
 using AgentAchieve.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace AgentAchieve.Infrastructure.Features.Sales;
 
 /// <summary>
@@ -27,6 +28,12 @@ public class SaleDto : IEntityPk
     public string? OwnedById { get; set; }
 
     /// <summary>
+    /// Gets or sets the full name of the owner/agent of the sales.
+    /// </summary>
+    [Display(Name = "Agent")]
+    public string? OwnerFullName { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the property associated with the sale.
     /// </summary>
     [Required]
@@ -34,11 +41,23 @@ public class SaleDto : IEntityPk
     public int? PropertyId { get; set; }
 
     /// <summary>
+    /// Gets or sets the full address of the property associated with the sale.
+    /// </summary>
+    [Display(Name = "Full Address")]
+    public string? PropertyFullAddress { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the client associated with the sale.
     /// </summary>
     [Required]
     [Display(Name = "Client")]
     public int? ClientId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Client full name and phone associated with the sale. 
+    /// </summary>
+    [Display(Name = "Client")]
+    public string? ClientFullNameAndPhone { get; set; }
 
     /// <summary>
     /// Gets or sets the type of sale (buyer or seller).
@@ -85,7 +104,14 @@ public class SaleDto : IEntityPk
     {
         public Mapping()
         {
-            CreateMap<Sale, SaleDto>().ReverseMap();
+            CreateMap<Sale, SaleDto>()
+                .ForMember(dest => dest.OwnerFullName, opt => opt.MapFrom(src => src.OwnedBy!.FullName))
+                .ForMember(dest => dest.ClientFullNameAndPhone, opt => opt.MapFrom(src => src.Client!.FullNameAndPhone))
+                .ForMember(dest => dest.PropertyFullAddress, opt => opt.MapFrom(src => src.Property!.FullAddress))
+                .ReverseMap()
+                .ForMember(x => x.OwnedBy, opt => opt.Ignore())
+                .ForMember(x => x.Client, opt => opt.Ignore())
+                .ForMember(x => x.Property, opt => opt.Ignore());
         }
     }
 }

@@ -60,4 +60,6 @@ public class Client(string firstName, string lastName, string phoneNumber) : Bas
     public string? ReferredBy { get; set; }
 
     public string? Notes { get; set; }
+
+    public string FullNameAndPhone => $"{LastName}, {FirstName}; Phone: {PhoneNumber}";
 }

@@ -27,6 +27,9 @@ public class SalesGoalDto : IEntityPk
     [Display(Name = "Agent")]
     public string? OwnedById { get; set; }
 
+    /// <summary>
+    /// Gets or sets the full name of the owner/agent of the sales goal.
+    /// </summary>
     [Display(Name = "Agent")]
     public string? OwnerFullName { get; set; }
 

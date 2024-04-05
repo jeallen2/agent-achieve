@@ -46,6 +46,9 @@
                                        Columns="1">
             </GridPopupEditFormSettings>
         </GridSettings>
+        <GridExport>
+            <GridExcelExport FileName="sales_goals" AllPages="true" />
+        </GridExport>
         <GridToolBarTemplate>
             <TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single" Class="align-with-dropdown">
                 <ButtonGroupToggleButton @bind-Selected="@IsIndividualLayoutSelected" OnClick="@SetGridStateForIndividualLayout">Individual</ButtonGroupToggleButton>
@@ -71,7 +74,7 @@
                                      Width="300px" />
             </TelerikFloatingLabel>
             <GridCommandButton Command="Add" Icon="@SvgIcon.Plus" Class="align-with-dropdown">Add</GridCommandButton>
-@*             <GridCommandButton Command="ExcelExport" Icon="@SvgIcon.FileExcel">Export to Excel</GridCommandButton> *@
+            <GridCommandButton Command="ExcelExport" Icon="@SvgIcon.FileExcel" Class="align-with-dropdown">Export to Excel</GridCommandButton>
         </GridToolBarTemplate>
 
         <GridAggregates>

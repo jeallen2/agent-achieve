@@ -32,10 +32,10 @@ public class SalesGoalService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<Sa
     public async Task<SalesGoalDto?> GetDtoByIdAsync(int id)
     {
         return await GetAll(includes => includes
-                                     .Include(sg => sg.OwnedBy)
-                                     .ThenInclude(o => o!.Sales))
+                                        .Include(sg => sg.OwnedBy)
+                                        .ThenInclude(o => o!.Sales))
             .ProjectTo<SalesGoalDto>(_mapper.ConfigurationProvider)
-                                     .FirstOrDefaultAsync(sg => sg.Id == id);
+                                        .FirstOrDefaultAsync(sg => sg.Id == id);
     }
 
     /// <summary>
