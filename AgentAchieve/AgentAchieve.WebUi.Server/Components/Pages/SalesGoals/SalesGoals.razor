@@ -12,57 +12,26 @@
 
 <PageTitle>Sales Goals</PageTitle>
 <TelerikCard>
-    <CardHeader>
-        <h4 class="card-title">Sales Goals</h4>
-        @*    <CardActions>
-        todo future grid/chart toggle
-        </CardActions> *@
-    </CardHeader>
-    <TelerikGrid Data="@Data"
-                 @ref="@Grid"
-                 Pageable="true"
-                 PageSize="10"
-                 Sortable="true"
-                 SortMode="@SortMode.Single"
-                 FilterMode="@GridFilterMode.FilterMenu"
-                 Resizable="true"
-                 SelectionMode="GridSelectionMode.Single"
-                 Reorderable="true"
-                 EditMode="@GridEditMode.Popup"
-                 OnUpdate="@Update"
-                 OnCreate="@Create"
-                 OnAdd="@Add"
-                 OnDelete="@Delete"
-                 ConfirmDelete="true"
-                 OnStateInit="@( (GridStateEventArgs<SalesGoalDto> args) => OnGridStateInit(args) )">
-        <GridSettings>
-            <GridPopupEditSettings MaxWidth="1200px"
-                                   MaxHeight="800px"
-                                   MinWidth="600px"
-                                   Class="custom-popup">
-            </GridPopupEditSettings>
-            <GridPopupEditFormSettings Orientation="@FormOrientation.Horizontal"
-                                       ButtonsLayout="FormButtonsLayout.Center"
-                                       Columns="1">
-            </GridPopupEditFormSettings>
-        </GridSettings>
-        <GridExport>
-            <GridExcelExport FileName="sales_goals" AllPages="true" />
-        </GridExport>
-        <GridToolBarTemplate>
-            <TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single" Class="align-with-dropdown">
-                <ButtonGroupToggleButton @bind-Selected="@IsIndividualLayoutSelected" OnClick="@SetGridStateForIndividualLayout">Individual</ButtonGroupToggleButton>
-                <ButtonGroupToggleButton @bind-Selected="@IsTeamLayoutSelected" OnClick="@SetGridStateForTeamLayout">Team</ButtonGroupToggleButton>
+    <CardHeader Class="p-2">
+        <CardActions Class="p-0">
+            <TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+                <ButtonGroupToggleButton @bind-Selected="@IsGridLayoutSelected">Grid</ButtonGroupToggleButton>
+                <ButtonGroupToggleButton @bind-Selected="@IsChartLayoutSelected">Chart</ButtonGroupToggleButton>
+            </TelerikButtonGroup>
+            <TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+                <ButtonGroupToggleButton @bind-Selected="@IsIndividualLayoutSelected" OnClick="@SetStateForIndividualLayout">Individual</ButtonGroupToggleButton>
+                <ButtonGroupToggleButton @bind-Selected="@IsTeamLayoutSelected" OnClick="@SetStateForTeamLayout">Team</ButtonGroupToggleButton>
             </TelerikButtonGroup>
 
-            @if (IsTeamLayoutSelected)
+            @if (IsTeamLayoutSelected && IsGridLayoutSelected)
             {
-                <TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single" Class="align-with-dropdown">
-                    <ButtonGroupToggleButton @bind-Selected="@IsGroupByGoalSelected" OnClick="@SetGridStateForTeamLayoutGroupedByGoalMonthYear">Group by Goal Month/Year</ButtonGroupToggleButton>
-                    <ButtonGroupToggleButton @bind-Selected="@IsGroupByAgentSelected" OnClick="@SetGridStateForTeamLayoutGroupedByAgent">Group by Agent</ButtonGroupToggleButton>
+                <TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+                    <ButtonGroupToggleButton @bind-Selected="@IsGroupByGoalSelected" OnClick="@SetStateForTeamLayoutGroupedByGoalMonthYear">Group by Goal Month/Year</ButtonGroupToggleButton>
+                    <ButtonGroupToggleButton @bind-Selected="@IsGroupByAgentSelected" OnClick="@SetStateForTeamLayoutGroupedByAgent">Group by Agent</ButtonGroupToggleButton>
                 </TelerikButtonGroup>
             }
-            <TelerikFloatingLabel Text="Agent Filter">
+            @if (IsIndividualLayoutSelected)
+            {
                 <TelerikDropDownList Data="@ApplicationUserDtos"
                                      @bind-Value="@SelectedAgentId"
                                      DefaultText="Select an Agent..."
@@ -71,122 +40,329 @@
                                      Filterable=true
                                      FilterOperator=StringFilterOperator.Contains
                                      OnChange="@FilterByAgent"
-                                     Width="300px" />
-            </TelerikFloatingLabel>
-            <GridCommandButton Command="Add" Icon="@SvgIcon.Plus" Class="align-with-dropdown">Add</GridCommandButton>
-            <GridCommandButton Command="ExcelExport" Icon="@SvgIcon.FileExcel" Class="align-with-dropdown">Export to Excel</GridCommandButton>
-        </GridToolBarTemplate>
+                                     Width="auto" />
+            }
 
-        <GridAggregates>
-            <GridAggregate Field="@nameof(SalesGoalDto.SalesGoalAmount)" Aggregate="GridAggregateType.Sum" />
-            <GridAggregate Field="@nameof(SalesGoalDto.TotalSales)" Aggregate="GridAggregateType.Sum" />
-            <GridAggregate Field="@nameof(SalesGoalDto.SalesGoalVariance)" Aggregate="GridAggregateType.Sum" />
-        </GridAggregates>
+        </CardActions>
+    </CardHeader>
+    @if (IsGridLayoutSelected)
+    {
+        <div id="gridWrapper">
+            <TelerikGrid Data="@AllData"
+                         @ref="@Grid"
+                         Class="!k-border-0"
+                         Pageable="true"
+                         PageSize="10"
+                         Sortable="true"
+                         SortMode="@SortMode.Single"
+                         FilterMode="@GridFilterMode.FilterMenu"
+                         Resizable="true"
+                         SelectionMode="GridSelectionMode.Single"
+                         Reorderable="true"
+                         EditMode="@GridEditMode.Popup"
+                         OnUpdate="@Update"
+                         OnCreate="@Create"
+                         OnAdd="@Add"
+                         OnDelete="@Delete"
+                         ConfirmDelete="true"
+                         OnStateInit="@( (GridStateEventArgs<SalesGoalDto> args) => OnGridStateInit(args) )">
+                <GridSettings>
+                    <GridPopupEditSettings MaxWidth="1200px"
+                                           MaxHeight="800px"
+                                           MinWidth="600px"
+                                           Class="custom-popup">
+                    </GridPopupEditSettings>
+                    <GridPopupEditFormSettings Orientation="@FormOrientation.Horizontal"
+                                               ButtonsLayout="FormButtonsLayout.Center"
+                                               Columns="1">
+                    </GridPopupEditFormSettings>
+                </GridSettings>
+                <GridExport>
+                    <GridExcelExport FileName="sales_goals" AllPages="true" />
+                </GridExport>
+                <GridToolBarTemplate>
 
-        <GridColumns>
-            <GridColumn Field="@nameof(SalesGoalDto.Id)" Editable="false" Visible="false" />
+                    <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
+                    <GridCommandButton Command="ExcelExport" Icon="@SvgIcon.FileExcel">Export to Excel</GridCommandButton>
+                </GridToolBarTemplate>
 
-            <GridColumn Field="@nameof(SalesGoalDto.OwnerFullName)" Width="300px" Filterable="false">
-                <EditorTemplate>
-                    @{
-                        GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
-                        <TelerikDropDownList Data="@ApplicationUserDtos"
-                                             @bind-Value="@GoalToEdit.OwnedById"
-                                             TextField="@nameof(ApplicationUserDto.FullName)"
-                                             ValueField="@nameof(ApplicationUserDto.Id)"
-                                             Filterable=true
-                                             FilterOperator=StringFilterOperator.Contains
-                                             FilterPlaceholder="Search for an Agent..." />
-                    }
-                </EditorTemplate>
-            </GridColumn>
+                <GridAggregates>
+                    <GridAggregate Field="@nameof(SalesGoalDto.SalesGoalAmount)" Aggregate="GridAggregateType.Sum" />
+                    <GridAggregate Field="@nameof(SalesGoalDto.TotalSales)" Aggregate="GridAggregateType.Sum" />
+                    <GridAggregate Field="@nameof(SalesGoalDto.SalesGoalVariance)" Aggregate="GridAggregateType.Sum" />
+                </GridAggregates>
 
-            <GridColumn Field="@nameof(SalesGoalDto.GoalMonthYear)" Width="225px">
+                <GridColumns>
+                    <GridColumn Field="@nameof(SalesGoalDto.Id)" Editable="false" Visible="false" />
 
-                <EditorTemplate>
-                    @{
-                        GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
-                        <TelerikDatePicker @bind-Value="@GoalToEdit.GoalMonthYear"
-                                           Width="100%"
-                                           Id="datepicker"
-                                           BottomView="@CalendarView.Year"
-                                           Format="MMM yyyy">
-                        </TelerikDatePicker>
-                    }
-                </EditorTemplate>
-                <GroupHeaderTemplate>
-                    <span>Goal Month/Year: @((context.Value as DateTime?).GetValueOrDefault().ToString("MMM yyyy"))</span>
-                </GroupHeaderTemplate>
+                    <GridColumn Field="@nameof(SalesGoalDto.OwnerFullName)" Width="300px" Filterable="false">
+                        <EditorTemplate>
+                            @{
+                                GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
+                                <TelerikDropDownList Data="@ApplicationUserDtos"
+                                                     @bind-Value="@GoalToEdit.OwnedById"
+                                                     TextField="@nameof(ApplicationUserDto.FullName)"
+                                                     ValueField="@nameof(ApplicationUserDto.Id)"
+                                                     Filterable=true
+                                                     FilterOperator=StringFilterOperator.Contains
+                                                     FilterPlaceholder="Search for an Agent..." />
+                            }
+                        </EditorTemplate>
+                    </GridColumn>
 
-            </GridColumn>
+                    <GridColumn Field="@nameof(SalesGoalDto.GoalMonthYear)" Width="225px">
 
-            <GridColumn Field="@nameof(SalesGoalDto.SalesGoalAmount)" TextAlign="@ColumnTextAlign.Right" Width="200px">
-                <EditorTemplate>
-                    @{
-                        GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
-                        <TelerikNumericTextBox @bind-Value="@GoalToEdit.SalesGoalAmount"
-                                               Format="C2"
-                                               Decimals="2"
-                                               Min="0"
-                                               Max="9999999999999999.99m" />
-                    }
-                </EditorTemplate>
-                <GroupFooterTemplate>
-                    @if (!(SelectedAgentId != null && IsGroupByGoalSelected == true))
+                        <EditorTemplate>
+                            @{
+                                GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
+                                <TelerikDatePicker @bind-Value="@GoalToEdit.GoalMonthYear"
+                                                   Width="100%"
+                                                   Id="datepicker"
+                                                   BottomView="@CalendarView.Year"
+                                                   Format="MMM yyyy">
+                                </TelerikDatePicker>
+                            }
+                        </EditorTemplate>
+                        <GroupHeaderTemplate>
+                            <span>Goal Month/Year: @((context.Value as DateTime?).GetValueOrDefault().ToString("MMM yyyy"))</span>
+                        </GroupHeaderTemplate>
+
+                    </GridColumn>
+
+                    <GridColumn Field="@nameof(SalesGoalDto.SalesGoalAmount)" TextAlign="@ColumnTextAlign.Right" Width="200px">
+                        <EditorTemplate>
+                            @{
+                                GoalToEdit = context as SalesGoalDto ?? new SalesGoalDto();
+                                <TelerikNumericTextBox @bind-Value="@GoalToEdit.SalesGoalAmount"
+                                                       Format="C2"
+                                                       Decimals="2"
+                                                       Min="0"
+                                                       Max="9999999999999999.99m" />
+                            }
+                        </EditorTemplate>
+                        <GroupFooterTemplate>
+                            @if (!(SelectedAgentId != null && IsGroupByGoalSelected == true))
+                            {
+                                <span>
+                                    Total Sales Goals:
+                                    <strong>@(string.Format("{0:C2}", context.Sum))</strong>
+                                </span>
+                            }
+                        </GroupFooterTemplate>
+                    </GridColumn>
+
+                    <GridColumn Field="@nameof(SalesGoalDto.TotalSales)" TextAlign="@ColumnTextAlign.Right" Width="200px" Editable=false>
+                        <GroupFooterTemplate>
+                            @if (!(SelectedAgentId != null && IsGroupByGoalSelected == true))
+                            {
+                                <span>
+                                    Total Sales:
+                                    <strong>@(string.Format("{0:C2}", context.Sum))</strong>
+                                </span>
+                            }
+                        </GroupFooterTemplate>
+
+                    </GridColumn>
+
+                    <GridColumn Field="@nameof(SalesGoalDto.SalesGoalVariance)" TextAlign="@ColumnTextAlign.Right" Width="250px" OnCellRender="OnSalesGoalVarianceCellRenderHandler" Editable=false>
+                        <GroupFooterTemplate>
+                            @if (!(SelectedAgentId != null && IsGroupByGoalSelected == true))
+                            {
+                                var sum = context.Sum;
+                                var sumClass = sum > 0 ? "k-text-success !k-font-weight-bold" : "k-text-error !k-font-weight-bold";
+                                <span>
+                                    Total Over/Under Sales Goal:
+                                    <strong class="@sumClass">@string.Format("{0:C2}", sum)</strong>
+                                </span>
+                            }
+                        </GroupFooterTemplate>
+                    </GridColumn>
+
+                    <GridColumn Field="@nameof(SalesGoalDto.PercentToSalesGoal)" TextAlign="@ColumnTextAlign.Right" Width="200px" Editable=false>
+                        <Template>
+                            @{
+                                var percentToSalesGoal = Convert.ToDouble(Math.Round((context as SalesGoalDto ?? new SalesGoalDto()).PercentToSalesGoal, 2));
+                                var progressBarClass = percentToSalesGoal < 50 ? "red-progress-bar" : percentToSalesGoal < 75 ? "yellow-progress-bar" : "green-progress-bar";
+                            }
+                            <TelerikProgressBar Class="@progressBarClass" Max="100" Value="@percentToSalesGoal" />
+                        </Template>
+                    </GridColumn>
+
+                    <GridCommandColumn Width="194px">
+                        <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+                        <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
+                        <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+                        <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+                    </GridCommandColumn>
+                </GridColumns>
+            </TelerikGrid>
+        </div>
+    }
+    else
+    {
+        <div id="chartWrapper">
+            <TelerikChart>
+                <ChartTitle Text="Sales Goals"></ChartTitle>
+                <ChartCategoryAxes>
+                    <ChartCategoryAxis BaseUnit="@ChartCategoryAxisBaseUnit.Months"
+                                       Type="@ChartCategoryAxisType.Date">
+                    </ChartCategoryAxis>
+                </ChartCategoryAxes>
+                <ChartTooltip Visible="true" Shared="true">
+                    <SharedTemplate>
+                        <div>
+                            @{
+                                var category = context.Category?.ToString();
+                                if (DateTime.TryParse(category, out var parsedDate))
+                                {
+                                    string formattedDate = parsedDate.ToString("MMM yyyy");
+                                    <h4 class="shared-tooltip-title">Sales Goals for @formattedDate.</h4>
+                                }
+
+                                var points = context.Points as List<ChartSeriesTooltipTemplatePoint>;
+
+                                if (points != null)
+                                {
+                                    <table>
+                                        <thead>
+                                            <tr>
+
+                                                <th colspan="2">Agent</th>
+                                                <th>Sales Goal Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var point in points)
+                                            {
+                                                var dataItem = (point.DataItem as SalesGoalDto ?? new SalesGoalDto());
+                                                <tr>
+                                                    <td>
+                                                        <span class="k-chart-shared-tooltip-marker"
+                                                              style="background-color: @point.SeriesColor; display: inline-block;">
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        @point.SeriesName
+                                                    </td>
+                                                    <td>
+                                                        @dataItem.SalesGoalAmount.GetValueOrDefault().ToString("C2")
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            }
+                        </div>
+                    </SharedTemplate>
+                </ChartTooltip>
+                <ChartLegend Visible="false"></ChartLegend>
+                <ChartSeriesItems>
+                    @foreach (var agentId in ChartData.Select(x => x.OwnedById).Distinct())
                     {
-                        <span>
-                            Total Sales Goals:
-                            <strong>@(string.Format("{0:C2}", context.Sum))</strong>
-                        </span>
-                    }
-                </GroupFooterTemplate>
-            </GridColumn>
+                        var agentName = ApplicationUserDtos.FirstOrDefault(x => x.Id == agentId)?.FullName;
+                        var agentData = ChartData.Where(x => x.OwnedById == agentId).ToList();
 
-            <GridColumn Field="@nameof(SalesGoalDto.TotalSales)" TextAlign="@ColumnTextAlign.Right" Width="200px" Editable=false>
-                <GroupFooterTemplate>
-                    @if (!(SelectedAgentId != null && IsGroupByGoalSelected == true))
+                        <ChartSeries Type="ChartSeriesType.Column"
+                                     Name="@agentName"
+                                     Data="@agentData"
+                                     Field="@nameof(SalesGoalDto.SalesGoalAmount)"
+                                     CategoryField="@nameof(SalesGoalDto.GoalMonthYear)">
+                            <ChartSeriesStack Enabled="true" Group="goal"></ChartSeriesStack>
+                        </ChartSeries>
+                    }
+                </ChartSeriesItems>
+                <ChartValueAxes>
+                    <ChartValueAxis>
+                        <ChartValueAxisLabels Format="{0:C}" />
+                    </ChartValueAxis>
+                </ChartValueAxes>
+            </TelerikChart>
+            <TelerikChart>
+                <ChartTitle Text="Actual Sales"></ChartTitle>
+                <ChartCategoryAxes>
+                    <ChartCategoryAxis BaseUnit="@ChartCategoryAxisBaseUnit.Months"
+                                       Type="@ChartCategoryAxisType.Date">
+                    </ChartCategoryAxis>
+                </ChartCategoryAxes>
+                <ChartTooltip Visible="true" Shared="true">
+                    <SharedTemplate>
+                        <div>
+                            @{
+                                var category = context.Category?.ToString();
+                                if (DateTime.TryParse(category, out var parsedDate))
+                                {
+                                    string formattedDate = parsedDate.ToString("MMM yyyy");
+                                    <h4 class="shared-tooltip-title">Sales Goals for @formattedDate.</h4>
+                                }
+
+                                var points = context.Points as List<ChartSeriesTooltipTemplatePoint>;
+
+                                if (points != null)
+                                {
+                                    <table>
+                                        <thead>
+                                            <tr>
+
+                                                <th colspan="2">Agent</th>
+                                                <th>Actual Sales</th>
+                                                <th>Over/Under Sales Goal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var point in points)
+                                            {
+                                                var dataItem = (point.DataItem as SalesGoalDto ?? new SalesGoalDto());
+                                                var varianceClass = dataItem.SalesGoalVariance > 0 ? "k-text-success !k-font-weight-bold" : "k-text-error !k-font-weight-bold";
+                                                <tr>
+                                                    <td>
+                                                        <span class="k-chart-shared-tooltip-marker"
+                                                              style="background-color: @point.SeriesColor; display: inline-block;">
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        @point.SeriesName
+                                                    </td>
+                                                    <td>
+                                                        @dataItem.TotalSales.ToString("C2")
+                                                    </td>
+                                                    <td class="@varianceClass">
+                                                        @dataItem.SalesGoalVariance.ToString("C2").
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            }
+                        </div>
+                    </SharedTemplate>
+                </ChartTooltip>
+                <ChartLegend Position="ChartLegendPosition.Bottom"></ChartLegend>
+                <ChartSeriesItems>
+                    @foreach (var agentId in ChartData.Select(x => x.OwnedById).Distinct())
                     {
-                        <span>
-                            Total Sales:
-                            <strong>@(string.Format("{0:C2}", context.Sum))</strong>
-                        </span>
+                        var agentName = ApplicationUserDtos.FirstOrDefault(x => x.Id == agentId)?.FullName;
+                        var agentData = ChartData.Where(x => x.OwnedById == agentId).ToList();
+
+                        <ChartSeries Type="ChartSeriesType.Column"
+                                     Name="@agentName"
+                                     Data="@agentData"
+                                     Field="@nameof(SalesGoalDto.TotalSales)"
+                                     CategoryField="@nameof(SalesGoalDto.GoalMonthYear)">
+                            <ChartSeriesStack Enabled="true" Group="totalSales"></ChartSeriesStack>
+                        </ChartSeries>
                     }
-                </GroupFooterTemplate>
+                </ChartSeriesItems>
+                <ChartValueAxes>
+                    <ChartValueAxis>
+                        <ChartValueAxisLabels Format="{0:C}" />
+                    </ChartValueAxis>
+                </ChartValueAxes>
+            </TelerikChart>
+        </div>
+    }
 
-            </GridColumn>
-
-            <GridColumn Field="@nameof(SalesGoalDto.SalesGoalVariance)" TextAlign="@ColumnTextAlign.Right" Width="250px" OnCellRender="OnSalesGoalVarianceCellRenderHandler" Editable=false>
-                <GroupFooterTemplate>
-                    @if (!(SelectedAgentId != null && IsGroupByGoalSelected == true))
-                    {
-                        var sum = context.Sum;
-                        var sumClass = sum > 0 ? "k-text-success !k-font-weight-bold" : "k-text-error !k-font-weight-bold";
-                        <span>
-                            Total Over/Under Sales Goal:
-                            <strong class="@sumClass">@string.Format("{0:C2}", sum)</strong>
-                        </span>
-                    }
-                </GroupFooterTemplate>
-            </GridColumn>
-
-            <GridColumn Field="@nameof(SalesGoalDto.PercentToSalesGoal)" TextAlign="@ColumnTextAlign.Right" Width="200px" Editable=false>
-                <Template>
-                    @{
-                        var percentToSalesGoal = Convert.ToDouble(Math.Round((context as SalesGoalDto ?? new SalesGoalDto()).PercentToSalesGoal, 2));
-                        var progressBarClass = percentToSalesGoal < 50 ? "red-progress-bar" : percentToSalesGoal < 75 ? "yellow-progress-bar" : "green-progress-bar";
-                    }
-                    <TelerikProgressBar Class="@progressBarClass" Max="100" Value="@percentToSalesGoal" />
-                </Template>
-            </GridColumn>
-
-            <GridCommandColumn Width="194px">
-                <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
-                <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
-                <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-                <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
-            </GridCommandColumn>
-        </GridColumns>
-    </TelerikGrid>
 
 </TelerikCard>
 
@@ -201,12 +377,15 @@
 @code {
     #region Properties
     TelerikGrid<SalesGoalDto> Grid { get; set; } = new TelerikGrid<SalesGoalDto>();
-    public List<SalesGoalDto> Data { get; set; } = new List<SalesGoalDto>();
+    public List<SalesGoalDto> AllData { get; set; } = new List<SalesGoalDto>();
+    public List<SalesGoalDto> ChartData { get; set; } = new List<SalesGoalDto>();
     public List<ApplicationUserDto> ApplicationUserDtos { get; set; } = new List<ApplicationUserDto>();
     private SalesGoalDto GoalToEdit { get; set; } = new SalesGoalDto();
     private string? CurrentUserId { get; set; }
     string? SelectedAgentId { get; set; }
     TelerikNotification NotificationComponent { get; set; } = new TelerikNotification();
+    bool IsGridLayoutSelected { get; set; } = true;
+    bool IsChartLayoutSelected { get; set; }
     bool IsIndividualLayoutSelected { get; set; } = true;
     bool IsTeamLayoutSelected { get; set; }
     bool IsGroupByGoalSelected { get; set; } = true;
@@ -220,12 +399,14 @@
         SelectedAgentId = CurrentUserId;
         ApplicationUserDtos = (await IdentityService.GetUsers()).ToList();
         await LoadData();
+        ChartData = AllData.Where(x => x.OwnedById == SelectedAgentId).ToList();
         await base.OnInitializedAsync();
     }
 
     private async Task LoadData()
     {
-        Data = (await DataService.GetAllDtoAsync()).ToList();
+        AllData = (await DataService.GetAllDtoAsync()).ToList();
+        ChartData = new List<SalesGoalDto>(AllData);
     }
     #endregion
 
@@ -241,12 +422,16 @@
     /// Clears the sort and group descriptors, and sets the sort descriptor to sort by percent to sales goal in descending order.
     /// Clears the group descriptors.
     /// </summary>
-    public async Task SetGridStateForIndividualLayout()
+    public async Task SetStateForIndividualLayout()
     {
         var state = Grid.GetState();
         state.SortDescriptors.Clear();
         state.SortDescriptors.Add(PercentToSalesGoalSortDescriptor());
-        if (SelectedAgentId == null) SelectedAgentId = CurrentUserId;
+        if (SelectedAgentId == null)
+        {
+            SelectedAgentId = CurrentUserId;
+            ChartData = AllData.Where(x => x.OwnedById == SelectedAgentId).ToList();
+        }
         state.FilterDescriptors.Clear();
         state.FilterDescriptors.Add(IndividualAgenFilterDescriptor());
         state.GroupDescriptors.Clear();
@@ -257,7 +442,7 @@
     /// Sets the grid state for the team layout.
     /// Clears the filter descriptors when going from individual to team.
     /// </summary>
-    public async Task SetGridStateForTeamLayout()
+    public async Task SetStateForTeamLayout()
     {
         SelectedAgentId = null;
         IsGroupByGoalSelected = true;
@@ -265,7 +450,8 @@
         var state = Grid.GetState();
         state.FilterDescriptors.Clear();
         await Grid.SetStateAsync(state);
-        await SetGridStateForTeamLayoutGroupedByGoalMonthYear();
+        await SetStateForTeamLayoutGroupedByGoalMonthYear();
+        ChartData = new List<SalesGoalDto>(AllData);
     }
 
     /// <summary>
@@ -273,7 +459,7 @@
     /// Clears the sort and filter descriptors.
     /// Clears the group descriptors and adds a group descriptor to group by goal month/year.
     /// </summary>
-    public async Task SetGridStateForTeamLayoutGroupedByGoalMonthYear()
+    public async Task SetStateForTeamLayoutGroupedByGoalMonthYear()
     {
         var state = Grid.GetState();
         state.SortDescriptors.Clear();
@@ -288,7 +474,7 @@
     /// Clears the sort and filter descriptors.
     /// Clears the group descriptors and adds a group descriptor to group by agent.
     /// </summary>
-    public async Task SetGridStateForTeamLayoutGroupedByAgent()
+    public async Task SetStateForTeamLayoutGroupedByAgent()
     {
         var state = Grid.GetState();
         state.SortDescriptors.Clear();
@@ -298,7 +484,7 @@
         await Grid.SetStateAsync(state);
     }
 
-    public async Task FilterByAgent(object value)
+    public async Task FilterByAgent(object? value)
     {
         var agentId = value as string;
         SelectedAgentId = agentId;
@@ -307,6 +493,11 @@
         if (agentId != null)
         {
             state.FilterDescriptors.Add(IndividualAgenFilterDescriptor());
+            ChartData = AllData.Where(x => x.OwnedById == agentId).ToList();
+        }
+        else
+        {
+            ChartData = new List<SalesGoalDto>(AllData);
         }
         await Grid.SetStateAsync(state);
     }

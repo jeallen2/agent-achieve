@@ -1,7 +1,9 @@
-﻿using AgentAchieve.Infrastructure.Features.Clients;
+﻿using AgentAchieve.Core.Domain;
+using AgentAchieve.Infrastructure.Features.Clients;
 using AgentAchieve.Infrastructure.Features.Identity;
 using AgentAchieve.Infrastructure.Features.Properties;
 using AgentAchieve.Infrastructure.Features.Sales;
+using AgentAchieve.Infrastructure.Features.SalesGoals;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,11 +37,76 @@ public class TelerikTestContext : TestContext
         // Create AutoMocker and set up mocks
         var mocker = new AutoMocker();
 
+        // Mock data for SaleDto
+        var mockSales = new List<SaleDto>
+        {
+            new SaleDto
+            {
+                Id = 1,
+                OwnedById = "1",
+                OwnerFullName = "First User",
+                PropertyId = 1,
+                PropertyFullAddress = "123 First St",
+                ClientId = 1,
+                ClientFullNameAndPhone = "Client1, 123-456-7890",
+                SaleType = SaleType.Buyer, // Assuming SaleType.Buyer is a valid value
+                ClosingDate = new DateTime(2022, 1, 1),
+                SalePrice = 500,
+                CommissionRate = 5
+            },
+            new SaleDto
+            {
+                Id = 2,
+                OwnedById = "2",
+                OwnerFullName = "Second User",
+                PropertyId = 2,
+                PropertyFullAddress = "456 Second St",
+                ClientId = 2,
+                ClientFullNameAndPhone = "Client2, 987-654-3210",
+                SaleType = SaleType.Seller, // Assuming SaleType.Seller is a valid value
+                ClosingDate = new DateTime(2022, 2, 1),
+                SalePrice = 1000,
+                CommissionRate = 10
+            }
+        };
+
+        
+
+
         // Mock ISaleService
-        var dataServiceMock = mocker.GetMock<ISaleService>();
-        dataServiceMock.Setup(service => service.GetAllDtoAsync())
-            .Returns(Task.FromResult(Enumerable.Empty<SaleDto>()));
-        Services.AddSingleton(dataServiceMock.Object);
+        var saleServiceMock = mocker.GetMock<ISaleService>();
+        saleServiceMock.Setup(service => service.GetAllDtoAsync())
+            .Returns(Task.FromResult(mockSales.AsEnumerable()));
+        Services.AddSingleton(saleServiceMock.Object);
+
+        // Mock data for SalesGoalDto
+        var mockSalesGoals = new List<SalesGoalDto>
+        {
+            new SalesGoalDto
+            {
+                Id = 1,
+                OwnedById = "1",
+                OwnerFullName = "First User",
+                GoalMonthYear = new DateTime(2022, 1, 1),
+                SalesGoalAmount = 1000,
+                Sales = mockSales.Where(s => s.OwnedById == "1").ToList()
+            },
+            new SalesGoalDto
+            {
+                Id = 2,
+                OwnedById = "2",
+                OwnerFullName = "Second User",
+                GoalMonthYear = new DateTime(2022, 2, 1),
+                SalesGoalAmount = 2000,
+                Sales = mockSales.Where(s => s.OwnedById == "2").ToList()
+            }
+        };
+
+        // Mock ISaleGoalsService
+        var salesGoalServiceMock = mocker.GetMock<ISalesGoalService>();
+        salesGoalServiceMock.Setup(service => service.GetAllDtoAsync())
+            .Returns(Task.FromResult(mockSalesGoals.AsEnumerable()));
+        Services.AddSingleton(salesGoalServiceMock.Object);
 
         // Mock IClientService
         var clientServiceMock = mocker.GetMock<IClientService>();
@@ -53,16 +120,35 @@ public class TelerikTestContext : TestContext
             .Returns(Task.FromResult(Enumerable.Empty<PropertyDto>()));
         Services.AddSingleton(propertyServiceMock.Object);
 
+        // Mock data for ApplicationUserDto
+        var mockUsers = new List<ApplicationUserDto>
+        {
+            new ApplicationUserDto
+            {
+                Id = "1",
+                UserName = "User1",
+                FirstName = "First",
+                LastName = "User"
+            },
+            new ApplicationUserDto
+            {
+                Id = "2",
+                UserName = "User2",
+                FirstName = "Second",
+                LastName = "User"
+            }
+        };
+
         // Mock IIdentityService
         var identityServiceMock = mocker.GetMock<IIdentityService>();
         identityServiceMock.Setup(service => service.GetUsers())
-            .Returns(Task.FromResult(Enumerable.Empty<ApplicationUserDto>()));
+            .Returns(Task.FromResult(mockUsers.AsEnumerable()));
         Services.AddSingleton(identityServiceMock.Object);
 
         // Mock ICurrentUserService
         var currentUserServiceMock = mocker.GetMock<ICurrentUserService>();
         currentUserServiceMock.Setup(service => service.GetUserIdAsync())
-            .Returns(Task.FromResult<string?>("testUserId"));
+            .Returns(Task.FromResult<string?>("1"));
         Services.AddSingleton(currentUserServiceMock.Object);
 
     }
