@@ -11,6 +11,7 @@ using AgentAchieve.UnitTests.Common;
 using Moq;
 using Moq.AutoMock;
 using Xunit.Abstractions;
+using AgentAchieve.Infrastructure.Features.Appointments;
 
 namespace AgentAchieve.Infrastructure.UnitTests;
 
@@ -176,6 +177,16 @@ public class TestBase<TClass> : LoggingTestBase<TClass>, IClassFixture<DatabaseF
     {
         var scope = _scopeFactory.CreateScope();
         return scope.ServiceProvider.GetRequiredService<ISalesGoalService>();
+    }
+
+    /// <summary>
+    /// Creates a appointment service.
+    /// </summary>
+    /// <returns>The created appointment service.</returns>
+    public IAppointmentService CreateAppointmentService()
+    {
+        var scope = _scopeFactory.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<IAppointmentService>();
     }
 
     /// <summary>

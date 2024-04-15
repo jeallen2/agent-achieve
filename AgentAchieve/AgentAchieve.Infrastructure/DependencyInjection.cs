@@ -1,6 +1,7 @@
 ﻿using AgentAchieve.Core.Domain;
 using AgentAchieve.Infrastructure.Data;
 using AgentAchieve.Infrastructure.Data.Interceptors;
+using AgentAchieve.Infrastructure.Features.Appointments;
 using AgentAchieve.Infrastructure.Features.Clients;
 using AgentAchieve.Infrastructure.Features.Identity;
 using AgentAchieve.Infrastructure.Features.Properties;
@@ -71,8 +72,8 @@ public static class DependencyInjection
             .AddScoped<IPropertyService, PropertyService>()
             .AddScoped<ISaleService, SaleService>()
             .AddScoped<ISalesGoalService, SalesGoalService>()
-            .AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>()
-            ;
+            .AddScoped<IAppointmentService, AppointmentService>()
+            .AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
 
         return services;
     }

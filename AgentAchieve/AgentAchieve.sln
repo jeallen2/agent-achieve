@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentAchieve.Core.UnitTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentAchieve.WebUi.Server.UnitTests", "AgentAchieve.WebUi.Server.UnitTests\AgentAchieve.WebUi.Server.UnitTests.csproj", "{C85761A6-7527-4BC7-B03C-CEC9A10AEDA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentAchieve.UnitTests.Common", "AgentAchieve.UnitTests.Common\AgentAchieve.UnitTests.Common.csproj", "{22DFB28E-255D-46D2-B4CA-4280010A9EBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentAchieve.UnitTests.Common", "AgentAchieve.UnitTests.Common\AgentAchieve.UnitTests.Common.csproj", "{22DFB28E-255D-46D2-B4CA-4280010A9EBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

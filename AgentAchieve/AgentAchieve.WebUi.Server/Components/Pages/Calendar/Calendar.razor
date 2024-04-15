@@ -1,0 +1,76 @@
+﻿@page "/calendar"
+@using AgentAchieve.Infrastructure.Features.Appointments
+@using Microsoft.AspNetCore.Authorization
+@inject IAppointmentService appointmentService;
+
+@attribute [Authorize]
+
+<PageTitle>Manage Calendar Events</PageTitle>
+
+<TelerikScheduler Data="@Appointments"
+                  @bind-Date="@StartDate"
+                  Height="800px"
+                  @bind-View="@CurrView"
+                  OnUpdate="@UpdateAppointment"
+                  OnCreate="@AddAppointment"
+                  OnDelete="@DeleteAppointment"
+                  AllowCreate="true"
+                  AllowDelete="true"
+                  AllowUpdate="true"
+                  ConfirmDelete="true"
+                  IdField="@(nameof(AppointmentDto.Id))"
+                  StartField="@(nameof(AppointmentDto.Start))"
+                  EndField="@(nameof(AppointmentDto.End))"
+                  TitleField="@(nameof(AppointmentDto.Title))"
+                  DescriptionField="@(nameof(AppointmentDto.Description))"
+                  IsAllDayField="@(nameof(AppointmentDto.IsAllDay))"
+                  RecurrenceRuleField="@(nameof(AppointmentDto.RecurrenceRule))"
+                  RecurrenceExceptionsField="@(nameof(AppointmentDto.RecurrenceExceptions))"
+                  RecurrenceIdField="@(nameof(AppointmentDto.RecurrenceId))">
+    <SchedulerViews>
+        <SchedulerDayView WorkDayStart="@WorkDayStart" WorkDayEnd="@WorkDayEnd" />
+        <SchedulerWeekView WorkDayStart="@WorkDayStart" WorkDayEnd="@WorkDayEnd" />
+        <SchedulerMultiDayView WorkDayStart="@WorkDayStart" WorkDayEnd="@WorkDayEnd" NumberOfDays="10" />
+        <SchedulerMonthView></SchedulerMonthView>
+        <SchedulerTimelineView WorkDayStart="@WorkDayStart" WorkDayEnd="@WorkDayEnd" />
+    </SchedulerViews>
+</TelerikScheduler>
+
+@code {
+    IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+    public DateTime StartDate { get; set; } = DateTime.Today;
+    public SchedulerView CurrView { get; set; } = SchedulerView.Week;
+
+    //the time portions are important
+    public DateTime WorkDayStart { get; set; } = new DateTime(2000, 1, 1, 8, 0, 0);
+    public DateTime WorkDayEnd { get; set; } = new DateTime(2000, 1, 1, 22, 0, 0);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        Appointments = await appointmentService.GetAllDtoAsync();
+        
+    }
+
+    async Task UpdateAppointment(SchedulerUpdateEventArgs args)
+    {
+        await appointmentService.UpdateAppointmentAsync((AppointmentDto)args.Item);
+        await LoadData();
+    }
+
+    async Task AddAppointment(SchedulerCreateEventArgs args)
+    {
+        await appointmentService.CreateAppointmentAsync((AppointmentDto)args.Item);
+        await LoadData();
+    }
+
+    async Task DeleteAppointment(SchedulerDeleteEventArgs args)
+    {
+        await appointmentService.DeleteAppointmentAsync(((AppointmentDto)args.Item).Id);
+        await LoadData();
+    }
+}
