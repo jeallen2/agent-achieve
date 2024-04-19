@@ -45,7 +45,6 @@ public static class DependencyInjection
         else
         {
             var connectionName = "DefaultConnection";
-            //var connectionName = "AzureConnection";
             var connectionString = configuration.GetConnectionString(connectionName) ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             services.AddDbContext<ApplicationDbContext>((sp, options) =>
             {
