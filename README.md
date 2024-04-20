@@ -84,4 +84,64 @@
 
 ## 2. Application Features and User Guide
 
-* **Live Demo site:** [https://agentachievedev.azurewebsites.net/](https://agentachievedev.azurewebsites.net/)
+* **Live Demo site:** https://agentachievedev.azurewebsites.net/
+
+* **Application Features**
+
+| Category | Description |
+|---|---|
+| User Account Management | Securely access the application using Google authentication. |
+| Client Interaction Tracker | Manage all client data, track properties associated with clients, and link sales transactions for a comprehensive client view. |
+| Goal Management | Agents can set sales goals, track progress, and view performance metrics to stay on top of their targets. |
+| Manager Dashboard | Managers gain insights into agent performance, track team goals, and generate reports to assess progress. |
+| Task Scheduler | Schedule appointments and organize your daily activities with the integrated calendar. | 
+
+## User Account Management
+
+* **User Account Creation - UI and Google Integration**
+    * User Story: As a user, I want to be able to log in with Google so that I can access the application.
+    * Instructional Video: https://www.youtube.com/embed/NnqabgCVBtY?feature=oembed
+
+## Client Interaction Tracker
+
+* **Client Information Management**
+    * User Story: As an agent, I want to manage my clients' contact information so that I can stay organized and provide excellent service.
+    * Instructional Video: https://www.youtube.com/embed/iHG10M1z3Us?feature=oembed
+
+* **Property Data Management**
+    * User Story: As an agent, I want to create, read, update, and delete property information for my clients so that I have properties to track listings, sales, and important details against.
+    * Instructional Video: https://www.youtube.com/embed/rns9NaQ5Y0M?feature=oembed
+
+* **Sales Transactions Data Entry**
+    * User Story: As an agent, I want to enter sales data for properties so that I can track my sales performance, calculate commissions, and generate reports.
+    * Instructional Video: https://www.youtube.com/embed/T8bRXIt6KUM?feature=oembed
+
+## Goal Management
+
+* **Sales Goal Entry**
+    * User Story: As an agent, I want to set monthly sales goals so that I can measure my performance against targets.
+    * Instructional Video: https://www.youtube.com/embed/GAE5Gs-zoMs?feature=oembed
+
+* **Sales Goal Performance**
+    * User Story: As an agent, I want to view a dashboard within my "Sales Goals" screen that displays my progress towards my monthly goals, providing insights into my sales performance.
+    * Instructional Video: https://www.youtube.com/embed/oCyYLQF6hfA?feature=oembed
+
+## Manager Dashboard 
+
+* **Manager Dashboard**
+    * User Story: As a manager, I want to view my Agents sales goals progress so that I can measure my agents performance against targets.
+    * Instructional Video: https://www.youtube.com/embed/Ouof9ZUWNjM?feature=oembed
+
+* **Sales Goals Chart**
+    * User Story: As an Agent, I want to be able to switch between a grid view and a chart view of sales goals, so that I can choose the most effective way to analyze the data.
+    * Instructional Video: https://www.youtube.com/embed/wIs12pRPRCQ?feature=oembed
+
+* **Manager Reports**
+    * User Story: As a manager, I want to generate reports so that I can measure my agent’s performance against targets.
+    * Instructional Video: https://www.youtube.com/embed/M3nQUkf5W9c?feature=oembed
+
+## Task Scheduler
+
+* **Calendar Events Management UI**
+    * User Story: As an agent, I want to manage calendar events so that I can organize my schedule.
+    * Instructional Video: https://www.youtube.com/embed/YeIAhfrIXUI?feature=oembed
